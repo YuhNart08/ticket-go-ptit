@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { Ticket, Search, Menu } from "lucide-react";
+import { Ticket, Search, Menu, ChevronDown, User, History, LogOut } from "lucide-react";
 import AuthContainer from "../../../../Auth/AuthContainer";
 import SearchBar from "./SearchBar";
 // @ts-expect-error - JSX file without type declarations
@@ -10,11 +10,26 @@ import { setAuthModalHandler } from "../../../../../utils/axiosInterceptor";
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement>(null);
   const { user, logout } = useAuth();
 
   // Đăng ký handler để mở modal khi có lỗi 401
   useEffect(() => {
     setAuthModalHandler(() => setIsAuthModalOpen(true));
+  }, []);
+
+  // Đóng user menu khi click bên ngoài
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+        setIsUserMenuOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
   return (
@@ -54,16 +69,67 @@ const Header = () => {
               Về chúng tôi
             </Link>
             {user ? (
-              <div className="flex items-center gap-4">
-                <span className="text-white">
-                  Xin chào, {user.fullName || user.email}
-                </span>
+              <div className="relative" ref={userMenuRef}>
                 <button
-                  onClick={logout}
-                  className="hover:text-black transition-colors duration-500 text-white"
+                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                  className="flex items-center gap-2 text-white hover:text-gray-200 transition-colors"
                 >
-                  Đăng xuất
+                  <img
+                    src={
+                      user.avatar
+                        ? (user.avatar.startsWith('http') ? user.avatar : `/images/user/${user.avatar}`)
+                        : `https://ui-avatars.com/api/?name=${user.fullName || user.email}&background=0D8ABC&color=fff`
+                    }
+                    alt="Avatar"
+                    className="h-8 w-8 rounded-full object-cover border-2 border-white"
+                  />
+                  <span className="text-sm font-medium hidden lg:inline">
+                    Tài khoản
+                  </span>
+                  <ChevronDown size={16} className="hidden lg:block" />
                 </button>
+
+                {/* Dropdown Menu */}
+                {isUserMenuOpen && (
+                  <div className="absolute right-0 top-12 w-56 origin-top-right transform rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 z-50">
+                    <div className="py-1 text-gray-700">
+                      <Link
+                        to="/my-tickets"
+                        className="flex items-center gap-3 px-4 py-3 text-sm hover:bg-gray-100"
+                        onClick={() => setIsUserMenuOpen(false)}
+                      >
+                        <Ticket size={20} className="text-gray-600" />
+                        <span>Vé của tôi</span>
+                      </Link>
+                      <Link
+                        to="/my-history"
+                        className="flex items-center gap-3 px-4 py-3 text-sm hover:bg-gray-100"
+                        onClick={() => setIsUserMenuOpen(false)}
+                      >
+                        <History size={20} className="text-gray-600" />
+                        <span>Sự kiện của tôi</span>
+                      </Link>
+                      <Link
+                        to="/account"
+                        className="flex items-center gap-3 px-4 py-3 text-sm hover:bg-gray-100"
+                        onClick={() => setIsUserMenuOpen(false)}
+                      >
+                        <User size={20} className="text-gray-600" />
+                        <span>Tài khoản của tôi</span>
+                      </Link>
+                      <button
+                        onClick={() => {
+                          logout();
+                          setIsUserMenuOpen(false);
+                        }}
+                        className="w-full flex items-center gap-3 px-4 py-3 text-sm hover:bg-gray-100 border-t"
+                      >
+                        <LogOut size={20} className="text-gray-600" />
+                        <span>Đăng xuất</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             ) : (
               <button
@@ -118,9 +184,7 @@ const Header = () => {
             </Link>
             {user ? (
               <div className="flex flex-col gap-2">
-                <span className="text-white py-2">
-                  Xin chào, {user.fullName || user.email}
-                </span>
+                <span className="text-white py-2">Tài khoản</span>
                 <button
                   onClick={() => {
                     logout();

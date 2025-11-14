@@ -7,7 +7,7 @@ import AllEvents from "../pages/AllEvents";
 import SelectTicket from "../pages/SelectTicket";
 import EventDetail from "../components/Layouts/Client/EventDetail";
 import NotFound from "../pages/NotFound";
-import AuthCallback from "../pages/AuthCallback";
+import AccountSettings from "../pages/AccountSettings";
 // @ts-expect-error - JSX file without type declarations
 import AdminLayout from "../components/Layouts/admin/LayoutAdmin";
 // @ts-expect-error - JSX file without type declarations
@@ -29,19 +29,25 @@ import OrderShow from "../pages/admin/order/OrderShow";
 // @ts-expect-error - JSX file without type declarations
 import OrderDetail from "../pages/admin/order/OrderDetail";
 import SelectTicketLayout from "../components/Layouts/Client/SelectTicketLayout/SelectTicketLayout";
+import BookingForm from "@/pages/BookingForm";
 
 const publicRoutes = [
   { path: "/", component: Home, layout: DefaultLayout },
   { path: "/about", component: About, layout: DefaultLayout },
   { path: "/my-tickets", component: MyTickets, layout: DefaultLayout },
+  { path: "/account", component: AccountSettings, layout: DefaultLayout },
   { path: "/contact", component: Contact, layout: DefaultLayout },
   { path: "/events/:id", component: EventDetail, layout: DefaultLayout },
   {
-    path: "/events/:id/select-ticket",
+    path: "/events/:id/bookings/select-ticket",
     component: SelectTicket,
     layout: SelectTicketLayout,
   },
-  { path: "/auth/callback", component: AuthCallback, layout: null },
+  {
+    path: "/events/:id/bookings/select-ticket/booking-form",
+    component: BookingForm,
+    layout: SelectTicketLayout,
+  },
   { path: "/search/:id", component: AllEvents, layout: DefaultLayout },
   { path: "*", component: NotFound, layout: null },
 ];

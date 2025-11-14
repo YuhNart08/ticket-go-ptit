@@ -101,16 +101,3 @@ export interface ResetPasswordCredentials {
   password: string;
   confirmPassword: string;
 }
-
-// OAuth types
-export interface OAuthProvider {
-  name: "google" | "facebook" | "github";
-  clientId: string;
-}
-
-export interface OAuthResponse {
-  success: boolean;
-  user?: User;
-  token?: string;
-  message?: string;
-}

@@ -76,7 +76,7 @@ export default function HeaderAdmin({ setOpen }) {
                     <img
                       src={
                         user.avatar
-                          ? `/images/user/${user.avatar}`
+                          ? (user.avatar.startsWith('http') ? user.avatar : `/images/user/${user.avatar}`)
                           : `https://ui-avatars.com/api/?name=${user.fullName}&background=0D8ABC&color=fff`
                       }
                       alt="Avatar"

@@ -63,12 +63,11 @@ const EventDetail = () => {
   }
 
   const handleSelectTicket = (eventId: string) => {
-    // Kiểm tra đăng nhập trước khi chuyển trang
     if (!user) {
-      openAuthModal(); // Gọi modal từ Header
+      openAuthModal();
       return;
     }
-    navigate(`/events/${eventId}/select-ticket`);
+    navigate(`/events/${eventId}/bookings/select-ticket`);
   };
 
   if (!event)

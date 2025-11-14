@@ -5,15 +5,18 @@ import {
   faTicket,
   faCalendarDays,
 } from "@fortawesome/free-solid-svg-icons";
+// @ts-expect-error - JSX file without type declarations
+import { useAuth } from "../../../contexts/AuthContext";
 
 const UserSidebar = () => {
   const location = useLocation();
+  const { user } = useAuth();
 
   const menuItems = [
     {
       icon: faUser,
       title: "Cài đặt tài khoản",
-      subItems: [{ name: "Thông tin tài khoản", path: "/account-info" }],
+      subItems: [{ name: "Thông tin tài khoản", path: "/account" }],
     },
     {
       icon: faTicket,
@@ -30,16 +33,20 @@ const UserSidebar = () => {
   return (
     <div className="w-64 bg-[#27272A] text-white p-6 rounded-lg">
       <div className="flex items-center gap-3 mb-6 pb-6 border-b border-gray-600">
-        <div className="w-12 h-12 rounded-full bg-gray-600 flex items-center justify-center">
+        <div className="w-12 h-12 rounded-full bg-gray-600 flex items-center justify-center overflow-hidden">
           <img
-            src="https://via.placeholder.com/48"
+            src={
+              user?.avatar
+                ? (user.avatar.startsWith('http') ? user.avatar : `/images/user/${user.avatar}`)
+                : `https://ui-avatars.com/api/?name=${user?.fullName || user?.email || 'User'}&background=0D8ABC&color=fff`
+            }
             alt="avatar"
-            className="rounded-full"
+            className="w-full h-full object-cover"
           />
         </div>
         <div>
           <p className="text-xs text-gray-400">Tài khoản của</p>
-          <p className="font-semibold">Trần Nguyễn Bá Huy</p>
+          <p className="font-semibold truncate">{user?.fullName || user?.email || 'User'}</p>
         </div>
       </div>
 

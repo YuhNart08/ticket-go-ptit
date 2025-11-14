@@ -102,7 +102,7 @@ export default function OrderDetail() {
                   colSpan="6"
                   className="text-center py-6 text-gray-500 italic"
                 >
-                  No event found in this order.
+                  No ticket found in this order.
                 </td>
               </tr>
             )}

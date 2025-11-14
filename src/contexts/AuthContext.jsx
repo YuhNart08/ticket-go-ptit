@@ -28,11 +28,31 @@ export function AuthProvider({ children }) {
     setToken(newToken);
   };
 
-  const logout = () => {
-    localStorage.removeItem("token");
-    setUser(null);
-    setToken(null);
-    delete axios.defaults.headers.common["Authorization"];
+  const logout = async () => {
+    try {
+      await axios.post("/api/auth/logout");
+    } catch (error) {
+      console.error("Logout API error:", error);
+    } finally {
+      localStorage.removeItem("token");
+      setUser(null);
+      setToken(null);
+      delete axios.defaults.headers.common["Authorization"];
+
+      window.location.href = "/";
+    }
+  };
+
+  const updateUser = (newToken) => {
+    try {
+      const decodedUser = jwtDecode(newToken);
+      setUser(decodedUser);
+      setToken(newToken);
+      localStorage.setItem("token", newToken);
+      axios.defaults.headers.common["Authorization"] = `Bearer ${newToken}`;
+    } catch (error) {
+      console.error("Invalid token:", error);
+    }
   };
 
   const value = {
@@ -42,6 +62,7 @@ export function AuthProvider({ children }) {
     isLoggedIn: !!user,
     login,
     logout,
+    updateUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

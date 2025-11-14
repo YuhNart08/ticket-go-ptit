@@ -19,7 +19,13 @@ const AuthContainer: React.FC<AuthContainerProps> = ({
   useEffect(() => {
     if (isOpen) {
       setAuthMode(initialMode);
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
     }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
   }, [isOpen, initialMode]);
 
   const handleSwitchToLogin = useCallback(() => {

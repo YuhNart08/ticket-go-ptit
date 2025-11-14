@@ -16,6 +16,14 @@ const SelectTicket = () => {
     {}
   );
 
+  const handleToBookingForm = (eventId: string) => {
+    if (!eventId) {
+      alert("Không có eventId hợp lệ");
+      return;
+    }
+    navigate(`/events/${eventId}/bookings/select-ticket/booking-form`);
+  };
+
   useEffect(() => {
     const fetchEvents = async () => {
       try {
@@ -249,7 +257,7 @@ const SelectTicket = () => {
                 : "Vui lòng chọn vé"
             }
             fullSize={true}
-            onClick={() => alert("chọn")}
+            onClick={() => handleToBookingForm(String(event?.id))}
             disabled={
               Object.values(ticketCounts).reduce(
                 (sum, count) => sum + count,
