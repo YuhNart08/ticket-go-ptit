@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "@/utils/axiosInterceptor";
 import { useAuth } from "../../../contexts/AuthContext.jsx";
+import DashboardCharts from "./DashboardCharts"; // Import component mới
 
 export default function Dashboard() {
   const { user, token } = useAuth();
@@ -76,7 +77,7 @@ export default function Dashboard() {
             <div className="p-4 text-lg font-semibold">
               Users ({stats.countUser})
             </div>
-            <div class="flex items-center justify-between bg-blue-700 px-4 py-3 text-sm">
+            <div className="flex items-center justify-between bg-blue-700 px-4 py-3 text-sm">
               <Link to="/admin/users" className="hover:underline">
                 View Details
               </Link>
@@ -107,6 +108,11 @@ export default function Dashboard() {
               <i className="fas fa-angle-right"></i>
             </div>
           </div>
+        </div>
+
+        {/* Thêm phần biểu đồ thống kê */}
+        <div className="mt-8">
+          <DashboardCharts />
         </div>
       </div>
     </>
