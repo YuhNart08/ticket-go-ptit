@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import axios from "@/utils/axiosInterceptor";
 import { CATEGORIES } from "../../../../../backend_ticketgo/src/config/constant.js";
 import TicketManagement from "../../../components/Layouts/admin/components/TicketManagement.jsx";
+import { formatCurrency } from "@/utils/utils";
 
 export default function EventDetail() {
   const [newTicket, setNewTicket] = useState({
@@ -199,13 +200,6 @@ export default function EventDetail() {
     }
 
     return formattedDate;
-  };
-
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(amount);
   };
 
   const fetchTicketTypes = useCallback(async () => {

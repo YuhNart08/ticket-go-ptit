@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "@/utils/axiosInterceptor";
 import { useAuth } from "../../../contexts/AuthContext.jsx";
-import DashboardCharts from "./DashboardCharts"; // Import component mới
+import DashboardCharts from "../../../components/Layouts/admin/DashboardCharts.jsx";
+import { formatCurrency } from "@/utils/utils";
 
 export default function Dashboard() {
   const { user, token } = useAuth();
@@ -12,12 +13,6 @@ export default function Dashboard() {
     countOrder: 0,
     totalRevenue: 0,
   });
-
-  const formatCurrency = (num) =>
-    new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(num || 0);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
