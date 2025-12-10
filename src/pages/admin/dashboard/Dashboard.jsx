@@ -2,8 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "@/utils/axiosInterceptor";
 import { useAuth } from "../../../contexts/AuthContext.jsx";
-import DashboardCharts from "./DashboardCharts"; // Import component mới
-
+import DashboardCharts from "../../../components/Layouts/admin/DashboardCharts.jsx";
 export default function Dashboard() {
   const { user, token } = useAuth();
   const [stats, setStats] = useState({
