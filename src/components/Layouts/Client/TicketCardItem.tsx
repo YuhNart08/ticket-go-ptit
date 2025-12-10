@@ -201,22 +201,11 @@ const TicketCardItem: React.FC<TicketCardItemProps> = ({ ticket }) => {
           }}
         >
           <div
-            className="relative w-full max-w-4xl overflow-hidden rounded-[28px] bg-gradient-to-br from-[#4c556a] via-[#3b4356] to-[#252b39] shadow-[0_24px_80px_rgba(0,0,0,0.8)] border border-white/10"
+            className="relative w-full max-w-4xl overflow-hidden rounded-2xl bg-[#373d4b] shadow-[0_24px_80px_rgba(0,0,0,0.8)] border border-white/10"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Close Button */}
-            <button
-              onClick={() => {
-                setShowQRModal(false);
-                setShowFullQR(false);
-              }}
-              className="absolute top-4 right-4 z-10 text-white/80 hover:text-white transition-colors bg-black/40 backdrop-blur-sm rounded-full p-2"
-            >
-              <X size={20} />
-            </button>
-
             {/* Header */}
-            <div className="px-6 pt-6 pb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-2 border-b border-white/10">
+            <div className="px-6 pt-5 pb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-2 border-b border-white/10">
               <div className="space-y-1 pr-10">
                 <p className="text-xs uppercase tracking-[0.18em] text-[#9ca3af] font-semibold">
                   Vé tham gia sự kiện
@@ -230,6 +219,17 @@ const TicketCardItem: React.FC<TicketCardItemProps> = ({ ticket }) => {
                   <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#2dc275]" />
                   {getStatusDisplay(ticket.status)}
                 </span>
+                {/* Close Button nearer to status */}
+                <button
+                  onClick={() => {
+                    setShowQRModal(false);
+                    setShowFullQR(false);
+                  }}
+                  className="ml-1 inline-flex items-center justify-center rounded-full border border-white/15 bg-black/30 hover:bg-black/50 text-white/80 hover:text-white transition-colors p-1.5"
+                  aria-label="Đóng"
+                >
+                  <X size={16} />
+                </button>
               </div>
             </div>
 
