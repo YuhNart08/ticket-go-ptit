@@ -13,9 +13,13 @@ const Home = () => {
   const [events, setEvents] = useState<Event[]>([]);
 
   useEffect(() => {
+    const apiUrl = import.meta.env.VITE_API_URL;
+    console.log("API URL:", apiUrl);
     const fetchData = async () => {
       // Fetch các sự kiện (trong tháng/tuần) cho carousel
-      const url = `/api/events?page=1&limit=8&week=true&month=true`;
+      const url = `${
+        import.meta.env.VITE_API_URL
+      }/api/events?page=1&limit=8&week=true&month=true`;
       try {
         const response = await fetch(url);
         if (!response.ok)
