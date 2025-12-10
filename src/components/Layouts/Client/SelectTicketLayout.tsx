@@ -8,6 +8,8 @@ interface Ticket {
   event_location?: string;
   event_duration?: string;
   status: string;
+  ticket_type: string; 
+  quantity: number;
 }
 
 interface SelectTicketLayoutProps {
@@ -20,9 +22,7 @@ const SelectTicketLayout: React.FC<SelectTicketLayoutProps> = ({ tickets }) => {
       {tickets.map((ticket) => {
         if (!ticket) return null;
 
-        return (
-          <TicketCardItem key={ticket.ticket_id} ticket={ticket} />
-        );
+        return <TicketCardItem key={ticket.ticket_id} ticket={ticket} />;
       })}
     </div>
   );
