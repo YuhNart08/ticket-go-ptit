@@ -4,6 +4,7 @@ import { CheckCircle, AlertCircle } from "lucide-react";
 import axios from "@/utils/axiosInterceptor";
 // @ts-expect-error - JSX file without type declarations
 import { useAuth } from "@/contexts/AuthContext";
+import { formatCurrency } from "@/utils/utils";
 
 interface OrderDetail {
   id: number;
@@ -90,10 +91,6 @@ const ThanksPage = () => {
       minute: "2-digit",
       second: "2-digit",
     });
-  };
-
-  const formatCurrency = (amount: number) => {
-    return amount.toLocaleString("vi-VN");
   };
 
   if (loading) {
