@@ -17,27 +17,50 @@ import { categories } from "@/constants/data/categories";
 
 const AllEvents = () => {
   const [events, setEvents] = useState<Event[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [searchParams] = useSearchParams();
-  const categoryName = searchParams.get("category");
-  const searchQuery = searchParams.get("search");
-  const [selectedDate, setSelectedDate] = useState<string>("");
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const currentPage = Number(searchParams.get("page")) || 1;
+  // const categoryName = searchParams.get("category");
+  // const searchQuery = searchParams.get("search");
+  const fromDate = searchParams.get("from");
+  const toDate = searchParams.get("to");
+  const selectedDate = fromDate && toDate ? `${fromDate},${toDate}` : "";
+
+  const updateUrlParams = (
+    newParams: Record<string, string | number | null>
+  ) => {
+    const currentParams = new URLSearchParams(searchParams);
+    let pageReset = false;
+
+    for (const key in newParams) {
+      if (
+        key !== "page" &&
+        String(currentParams.get(key) || "") !== String(newParams[key] || "")
+      ) {
+        pageReset = true;
+      }
+      if (newParams[key] === null || newParams[key] === "") {
+        currentParams.delete(key);
+      } else {
+        currentParams.set(key, String(newParams[key]));
+      }
+    }
+
+    if (pageReset) {
+      currentParams.set("page", "1");
+    }
+
+    setSearchParams(currentParams);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      let url = `/api/events?page=${currentPage}&limit=20`;
-      if (searchQuery) {
-        url += `&search=${encodeURIComponent(searchQuery)}`;
-      }
-      if (categoryName) {
-        url += `&category=${encodeURIComponent(categoryName)}`;
-      }
-      if (selectedDate) {
-        url += `&date=${encodeURIComponent(selectedDate)}`;
-      }
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("limit", "20");
+      const url = `/api/events?${params.toString()}`;
 
       try {
         const response = await fetch(url);
@@ -60,16 +83,26 @@ const AllEvents = () => {
       behavior: "smooth",
     });
 
-    setCurrentPage(1);
     fetchData();
-  }, [categoryName, searchQuery, selectedDate]);
+  }, [searchParams]);
 
   return (
     <>
       <CategoryFilterBar data={categories} />
       <DateFilterBar
         selectedDate={selectedDate}
-        onDateChange={setSelectedDate}
+        onDateChange={(dateString) => {
+          if (dateString) {
+            // Khi lọc theo ngày, xóa tất cả các query cũ và chỉ giữ lại from, to
+            const [from, to] = dateString.split(",");
+            const newParams = new URLSearchParams();
+            newParams.set("from", from);
+            newParams.set("to", to);
+            setSearchParams(newParams);
+          } else {
+            updateUrlParams({ from: null, to: null });
+          }
+        }}
       />
 
       <div className="min-h-screen bg-[#000] pb-15">
@@ -82,18 +115,18 @@ const AllEvents = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {loading
               ? Array.from({ length: 8 }).map((_, index) => (
-                  <div
-                    key={index}
-                    className="bg-[#3f3f46] rounded-xl aspect-[16/9] animate-pulse"
-                  ></div>
-                ))
+                <div
+                  key={index}
+                  className="bg-[#3f3f46] rounded-xl aspect-[16/9] animate-pulse"
+                ></div>
+              ))
               : events.map((event, index) => (
-                  <EventCard
-                    key={event.id ?? index}
-                    event={event}
-                    price={getDisplayPrice(event.ticketTypes)}
-                  />
-                ))}
+                <EventCard
+                  key={event.id ?? index}
+                  event={event}
+                  price={getDisplayPrice(event.ticketTypes)}
+                />
+              ))}
           </div>
         </div>
 
@@ -106,12 +139,13 @@ const AllEvents = () => {
                 <PaginationItem>
                   <PaginationPrevious
                     href="#"
-                    onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-                    className={`${
-                      currentPage === 1
-                        ? "opacity-40 pointer-events-none"
-                        : "hover:bg-blue-600 hover:text-white"
-                    } bg-[#3f3f46] text-white border border-gray-600`}
+                    onClick={() =>
+                      updateUrlParams({ page: Math.max(currentPage - 1, 1) })
+                    }
+                    className={`${currentPage === 1
+                      ? "opacity-40 pointer-events-none"
+                      : "hover:bg-blue-600 hover:text-white"
+                      } bg-[#3f3f46] text-white border border-gray-600`}
                   />
                 </PaginationItem>
 
@@ -121,12 +155,11 @@ const AllEvents = () => {
                     <PaginationLink
                       href="#"
                       isActive={currentPage === i + 1}
-                      onClick={() => setCurrentPage(i + 1)}
-                      className={`${
-                        currentPage === i + 1
-                          ? "bg-blue-500 text-white border-blue-500"
-                          : "bg-[#3f3f46] text-gray-300 hover:bg-blue-600 hover:text-white border border-gray-600"
-                      }`}
+                      onClick={() => updateUrlParams({ page: i + 1 })}
+                      className={`${currentPage === i + 1
+                        ? "bg-blue-500 text-white border-blue-500"
+                        : "bg-[#3f3f46] text-gray-300 hover:bg-blue-600 hover:text-white border border-gray-600"
+                        }`}
                     >
                       {i + 1}
                     </PaginationLink>
@@ -138,13 +171,14 @@ const AllEvents = () => {
                   <PaginationNext
                     href="#"
                     onClick={() =>
-                      setCurrentPage((p) => Math.min(p + 1, totalPages))
+                      updateUrlParams({
+                        page: Math.min(currentPage + 1, totalPages),
+                      })
                     }
-                    className={`${
-                      currentPage === totalPages
-                        ? "opacity-40 pointer-events-none"
-                        : "hover:bg-blue-600 hover:text-white"
-                    } bg-[#3f3f46] text-white border border-gray-600`}
+                    className={`${currentPage === totalPages
+                      ? "opacity-40 pointer-events-none"
+                      : "hover:bg-blue-600 hover:text-white"
+                      } bg-[#3f3f46] text-white border border-gray-600`}
                   />
                 </PaginationItem>
               </PaginationContent>

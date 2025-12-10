@@ -57,11 +57,11 @@ export interface LoginCredentials {
 }
 
 export interface RegisterCredentials {
+  fullName: string;
   email: string;
   phone?: string;
   password: string;
   confirmPassword: string;
-  name: string;
   acceptTerms?: boolean;
 }
 
@@ -100,4 +100,58 @@ export interface ResetPasswordCredentials {
   token: string;
   password: string;
   confirmPassword: string;
+}
+
+export type MyJwtPayload = {
+  id: number;
+  email: string;
+  name?: string;
+};
+
+// Order History Types
+export interface EventDetailsForTicket {
+  id: number;
+  title: string;
+  location?: string;
+  startDate: string;
+  duration?: string;
+}
+
+export interface TicketTypeForOrder {
+  id: number;
+  type: string;
+  event: EventDetailsForTicket;
+}
+
+export interface RawTicketOrderDetail {
+  id: number;
+  price: number;
+  quantity: number;
+  ticketType: TicketTypeForOrder;
+}
+
+export interface RawOrder {
+  id: number;
+  status: string;
+  orderDetails?: RawTicketOrderDetail[];
+  ticketOrderDetails?: RawTicketOrderDetail[];
+}
+
+export interface OrdersHistoryResponse {
+  orders: RawOrder[];
+  totalPages: number;
+  totalRecords: number;
+  currentPage: number;
+}
+
+export interface MappedTicket {
+  id: number;
+  ticket_id: string;
+  event_name: string;
+  event_date: string;
+  event_location?: string;
+  event_duration?: string;
+  status: string;
+  ticket_type: string;
+  quantity: number;
 }

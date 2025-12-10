@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faBars } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "../../../contexts/AuthContext";
-import axios from "axios";
+import axios from "@/utils/axiosInterceptor";
 
 export default function HeaderAdmin({ setOpen }) {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -76,7 +76,9 @@ export default function HeaderAdmin({ setOpen }) {
                     <img
                       src={
                         user.avatar
-                          ? (user.avatar.startsWith('http') ? user.avatar : `/images/user/${user.avatar}`)
+                          ? user.avatar.startsWith("http")
+                            ? user.avatar
+                            : `/images/user/${user.avatar}`
                           : `https://ui-avatars.com/api/?name=${user.fullName}&background=0D8ABC&color=fff`
                       }
                       alt="Avatar"

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import axios from "axios";
+import axios from "@/utils/axiosInterceptor";
 import { GENDERS } from "../../../../../backend_ticketgo/src/config/constant.js";
 
 export default function UserDetail() {

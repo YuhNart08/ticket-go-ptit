@@ -3,7 +3,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUser,
   faTicket,
-  faCalendarDays,
 } from "@fortawesome/free-solid-svg-icons";
 // @ts-expect-error - JSX file without type declarations
 import { useAuth } from "../../../contexts/AuthContext";
@@ -22,11 +21,6 @@ const UserSidebar = () => {
       icon: faTicket,
       title: "Vé của tôi",
       path: "/my-tickets",
-    },
-    {
-      icon: faCalendarDays,
-      title: "Sự kiện của tôi",
-      path: "/my-events",
     },
   ];
 

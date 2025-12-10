@@ -4,7 +4,7 @@ import { Camera, Check, X, Calendar } from "lucide-react";
 // @ts-expect-error - JSX file without type declarations
 import { useAuth } from "../contexts/AuthContext";
 import UserSidebar from "../components/Layouts/Client/UserSidebar";
-import axios from "axios";
+import axios from "@/utils/axiosInterceptor";
 
 const AccountSettings = () => {
   const navigate = useNavigate();
@@ -242,9 +242,8 @@ const AccountSettings = () => {
                     name="fullName"
                     value={formData.fullName}
                     onChange={handleInputChange}
-                    className={`w-full px-3 py-2.5 bg-white text-black rounded text-sm ${
-                      errors.fullName ? "border-2 border-red-500" : ""
-                    }`}
+                    className={`w-full px-3 py-2.5 bg-white text-black rounded text-sm ${errors.fullName ? "border-2 border-red-500" : ""
+                      }`}
                     required
                   />
                 </div>
@@ -258,36 +257,27 @@ const AccountSettings = () => {
                       </span>
                     )}
                   </label>
-                  <div className="flex gap-2">
+                  <div className="relative">
                     <input
-                      type="text"
-                      value="+84"
-                      disabled
-                      className="w-16 px-3 py-2.5 bg-gray-700 text-gray-300 rounded text-sm text-center"
-                    />
-                    <div className="relative flex-1">
-                      <input
-                        type="tel"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleInputChange}
-                        className={`w-full px-3 py-2.5 bg-white text-black rounded text-sm pr-10 ${
-                          errors.phone ? "border-2 border-red-500" : ""
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                      className={`w-full px-3 py-2.5 bg-white text-black rounded text-sm pr-10 ${errors.phone ? "border-2 border-red-500" : ""
                         }`}
-                        placeholder="Nhập số điện thoại"
-                      />
-                      {formData.phone && (
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setFormData((prev) => ({ ...prev, phone: "" }))
-                          }
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                        >
-                          <X size={18} />
-                        </button>
-                      )}
-                    </div>
+                      placeholder="Nhập số điện thoại"
+                    />
+                    {formData.phone && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setFormData((prev) => ({ ...prev, phone: "" }))
+                        }
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      >
+                        <X size={18} />
+                      </button>
+                    )}
                   </div>
                 </div>
 
@@ -321,32 +311,31 @@ const AccountSettings = () => {
                       </span>
                     )}
                   </label>
-                   <div className="relative group">
-                     <input
-                       ref={dateInputRef}
-                       type="date"
-                       name="birthDate"
-                       value={formData.birthDate}
-                       onChange={handleInputChange}
-                       max={new Date().toISOString().split('T')[0]}
-                       className={`w-full px-3 py-2.5 pr-10 bg-white text-black rounded text-sm cursor-pointer transition-all duration-200 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden ${
-                         errors.birthDate 
-                           ? "border-2 border-red-500" 
-                           : "border border-gray-300 hover:border-[#2dc275] focus:border-[#2dc275] focus:ring-2 focus:ring-[#2dc275]/20"
-                       }`}
-                     />
-                     <button
-                       type="button"
-                       onClick={() => dateInputRef.current?.showPicker()}
-                       className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 hover:bg-gray-100 rounded transition-colors duration-200"
-                       aria-label="Chọn ngày"
-                     >
-                       <Calendar 
-                         className="w-5 h-5 text-gray-400 group-hover:text-[#2dc275] transition-colors duration-200"
-                         strokeWidth={2.5}
-                       />
-                     </button>
-                   </div>
+                  <div className="relative group">
+                    <input
+                      ref={dateInputRef}
+                      type="date"
+                      name="birthDate"
+                      value={formData.birthDate}
+                      onChange={handleInputChange}
+                      max={new Date().toISOString().split('T')[0]}
+                      className={`w-full px-3 py-2.5 pr-10 bg-white text-black rounded text-sm cursor-pointer transition-all duration-200 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden ${errors.birthDate
+                        ? "border-2 border-red-500"
+                        : "border border-gray-300 hover:border-[#2dc275] focus:border-[#2dc275] focus:ring-2 focus:ring-[#2dc275]/20"
+                        }`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => dateInputRef.current?.showPicker()}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 hover:bg-gray-100 rounded transition-colors duration-200"
+                      aria-label="Chọn ngày"
+                    >
+                      <Calendar
+                        className="w-5 h-5 text-gray-400 group-hover:text-[#2dc275] transition-colors duration-200"
+                        strokeWidth={2.5}
+                      />
+                    </button>
+                  </div>
                 </div>
 
                 <div>

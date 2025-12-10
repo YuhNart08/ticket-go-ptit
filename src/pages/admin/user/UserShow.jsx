@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Pagination from "../../../components/Layouts/admin/components/Pagination.jsx";
-import axios from "axios";
+import axios from "@/utils/axiosInterceptor";
 
 export default function UserShow() {
   const [users, setUsers] = useState([]);

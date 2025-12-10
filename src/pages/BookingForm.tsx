@@ -1,5 +1,5 @@
 import { useEffect, useState, type ChangeEvent } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import type { Event } from "@/constants/types/types";
 import { Calendar, MapPin } from "lucide-react";
 import { formatCurrency, formatDateTimeDisplay } from "@/utils/utils";
@@ -10,12 +10,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import axios from "@/utils/axiosInterceptor";
 import ConfirmationDialog from "./ConfirmationDialog";
-
-// const Schema = z.object({
-//   name: z.string().min(1, "Vui lòng nhập họ tên"),
-//   email: z.string().email("Email không hợp lệ"),
-//   phone: z.string().min(9, "Số điện thoại không hợp lệ"),
-// });
+import CartItem from "@/components/Layouts/Client/CartItem";
 
 type BookingFields = "receiverName" | "receiverPhone" | "receiverEmail";
 
@@ -45,19 +40,32 @@ const BookingForm = () => {
 
   const [cartDetails, setCartDetails] = useState<any[]>([]);
   const [cartId, setCartId] = useState<number | null>(null);
-  const [paymentExpiresAt, setPaymentExpiresAt] = useState<number | null>(null);
+  const [paymentExpiresAt, setPaymentExpiresAt] = useState<number | undefined>(
+    undefined
+  );
 
+  const location = useLocation();
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [isNavigatingAway, setIsNavigatingAway] = useState(false);
   const [showTimeoutDialog, setShowTimeoutDialog] = useState(false);
+  const [countdownKey, setCountdownKey] = useState(Date.now());
 
-  // const {
-  //   register,
-  //   handleSubmit,
-  //   formState: { errors },
-  // } = useForm({
-  //   resolver: zodResolver(Schema),
-  // });
+  // const state =
+  //   (location.state as {
+  //     receiverName?: string;
+  //     receiverPhone?: string | null;
+  //     receiverEmail?: string | null;
+  //     paymentExpiresAt?: number;
+  //   }) || {};
+
+  // const receiverName = state.receiverName ?? "";
+  // const receiverPhone = state.receiverPhone ?? null;
+  // const receiverEmail = state.receiverEmail ?? null;
+  // const paymentExpiresAt = state.paymentExpiresAt;
+
+  let initialMinutes = paymentExpiresAt
+    ? Math.max(0, (paymentExpiresAt - Date.now()) / (1000 * 60))
+    : 15;
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const name = e.target.name as BookingFields;
@@ -170,16 +178,34 @@ const BookingForm = () => {
               ? result.cartDetails[0].cartId
               : null);
           setCartId(currentCartId);
+          localStorage.setItem("cartId", String(currentCartId));
 
           if (currentCartId) {
             const storageKey = `checkoutEnd_${currentCartId}`;
-            const storedExpiresAt = localStorage.getItem(storageKey);
             let expiresAt: number;
-            if (storedExpiresAt) {
-              expiresAt = Number(storedExpiresAt);
+            let receiverName: string | undefined;
+            let receiverPhone: string | undefined;
+            let receiverEmail: string | undefined;
+
+            // Ưu tiên state từ trang Payment, sau đó là localStorage, cuối cùng mới tạo mới
+            if (location.state?.paymentExpiresAt) {
+              expiresAt = location.state.paymentExpiresAt;
+              receiverName = location.state.receiverName;
+              receiverPhone = location.state.receiverPhone;
+              receiverEmail = location.state.receiverEmail;
+              setFormData({
+                receiverName: receiverName || "",
+                receiverPhone: receiverPhone || "",
+                receiverEmail: receiverEmail || "",
+              });
             } else {
-              expiresAt = Date.now() + 15 * 60 * 1000;
-              localStorage.setItem(storageKey, String(expiresAt));
+              const storedExpiresAt = localStorage.getItem(storageKey);
+              if (storedExpiresAt) {
+                expiresAt = Number(storedExpiresAt);
+              } else {
+                expiresAt = Date.now() + 15 * 60 * 1000;
+                localStorage.setItem(storageKey, String(expiresAt));
+              }
             }
             setPaymentExpiresAt(expiresAt);
           }
@@ -194,7 +220,7 @@ const BookingForm = () => {
     if (token) {
       fetchCartData();
     }
-  }, [token]);
+  }, [token, location.state]);
 
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
@@ -221,6 +247,18 @@ const BookingForm = () => {
     };
   }, [isNavigatingAway]);
 
+  useEffect(() => {
+    const handler = () => {
+      if (!document.hidden && paymentExpiresAt) {
+        initialMinutes = Math.max(0, (paymentExpiresAt - Date.now()) / (1000 * 60));
+        setCountdownKey(Date.now()); // Force re-render CountdownTimer
+      }
+    };
+    document.addEventListener("visibilitychange", handler);
+    return () => document.removeEventListener("visibilitychange", handler);
+  }, [paymentExpiresAt]);
+
+
   if (loading) {
     return (
       <div className="flex flex-1 min-h-screen bg-black text-white text-xl items-center justify-center">
@@ -234,22 +272,32 @@ const BookingForm = () => {
   //   return <PaymentForm visible={true} />;
   // }
 
-  const initialMinutes = paymentExpiresAt
-    ? Math.max(0, (paymentExpiresAt - Date.now()) / (1000 * 60))
-    : 15;
-
   const handleTimeout = async () => {
     try {
-      const cartId = localStorage.getItem("cartId");
       await axios.delete("/api/carts");
+      const cartId = localStorage.getItem("cartId");
       if (cartId) {
         localStorage.removeItem(`checkoutEnd_${cartId}`);
         localStorage.removeItem("cartId");
       }
-      setShowTimeoutDialog(true);
     } catch (error) {
-      toast.error("Lỗi khi xóa giỏ hàng.");
-      navigate("/");
+      toast.error("Lỗi khi hủy đơn hàng.");
+    }
+  };
+
+  const handleCancel = async () => {
+    try {
+      await axios.delete("/api/carts");
+      const cartId = localStorage.getItem("cartId");
+      if (cartId) {
+        localStorage.removeItem(`checkoutEnd_${cartId}`);
+        localStorage.removeItem("cartId");
+      }
+      setIsNavigatingAway(true);
+      setShowConfirmDialog(false);
+      navigate(`/events/${id}/bookings/select-ticket`);
+    } catch (error) {
+      toast.error("Lỗi khi hủy đơn hàng.");
     }
   };
 
@@ -288,8 +336,12 @@ const BookingForm = () => {
           {/* COUNTDOWN SECTION */}
           <div className="flex-1">
             <CountdownTimer
+              key={countdownKey}
               initialMinutes={initialMinutes}
-              onTimeout={handleTimeout}
+              onTimeout={() => {
+                handleTimeout();
+                setShowTimeoutDialog(true);
+              }}
             />
           </div>
         </div>
@@ -316,7 +368,7 @@ const BookingForm = () => {
                     value={formData.receiverName}
                     onChange={handleChange}
                     className="bg-[#2c2c30] border-gray-600 text-white py-6"
-                    // {...register("receiverName")}
+                  // {...register("receiverName")}
                   />
                   {errors.receiverName && (
                     <p className="text-red-500 text-sm">
@@ -335,7 +387,7 @@ const BookingForm = () => {
                     value={formData.receiverEmail}
                     onChange={handleChange}
                     className="bg-[#2c2c30] border-gray-600 text-white py-6"
-                    // {...register("receiverEmail")}
+                  // {...register("receiverEmail")}
                   />
                   {errors.receiverEmail && (
                     <p className="text-red-500 text-sm">
@@ -354,7 +406,7 @@ const BookingForm = () => {
                     value={formData.receiverPhone}
                     onChange={handleChange}
                     className="bg-[#2c2c30] border-gray-600 text-white py-6"
-                    // {...register("receiverPhone")}
+                  // {...register("receiverPhone")}
                   />
                   {errors.receiverPhone && (
                     <p className="text-red-500 text-sm">
@@ -367,7 +419,15 @@ const BookingForm = () => {
           </div>
           {/* ORDER INFO  */}
           <div className="flex flex-col gap-4 bg-white text-black flex-3 mt-28 rounded-xl p-4 h-fit">
-            <h3 className="font-semibold text-lg">Thông tin đặt vé</h3>
+            <div className="flex justify-between">
+              <h3 className="font-semibold text-lg">Thông tin đặt vé</h3>
+              <a
+                onClick={() => setShowConfirmDialog(true)}
+                className="font-semibold text-md text-[#2dc275] hover:text-black transition-colors duration-500 cursor-pointer"
+              >
+                Chọn lại vé
+              </a>
+            </div>
 
             <div className="flex flex-col gap-3   border-b-1 border-dashed border-b-gray-600 pb-4">
               {/* TITLE */}
@@ -380,27 +440,7 @@ const BookingForm = () => {
               <div className="flex flex-col gap-2">
                 {cartDetails && cartDetails.length > 0 ? (
                   cartDetails.map((item) => (
-                    <div
-                      key={item.id}
-                      className="flex justify-between items-center"
-                    >
-                      <div className="flex flex-col">
-                        <p className="font-normal">
-                          {item.ticketType?.type ?? "Loại vé"}
-                        </p>
-                        <p className="font-normal text-gray-500">
-                          {formatCurrency(item.price)}
-                        </p>
-                      </div>
-                      <div className="flex flex-col text-end">
-                        <p className="font-normal text-gray-500">
-                          {item.quantity}
-                        </p>
-                        <p className="font-normal text-gray-500">
-                          {formatCurrency(item.price * item.quantity)}
-                        </p>
-                      </div>
-                    </div>
+                    <CartItem key={item.id} item={item} />
                   ))
                 ) : (
                   <div className="flex">Giỏ hàng trống</div>
@@ -413,20 +453,20 @@ const BookingForm = () => {
                 Tạm tính{" "}
                 {cartDetails.length > 0
                   ? cartDetails.reduce(
-                      (total, item) => total + item.quantity,
-                      0
-                    )
+                    (total, item) => total + item.quantity,
+                    0
+                  )
                   : 0}{" "}
                 ghế
               </p>
               <p className="font-bold text-lg text-[#2dc275]">
                 {cartDetails.length > 0
                   ? formatCurrency(
-                      cartDetails.reduce(
-                        (total, item) => total + item.price * item.quantity,
-                        0
-                      )
+                    cartDetails.reduce(
+                      (total, item) => total + item.price * item.quantity,
+                      0
                     )
+                  )
                   : formatCurrency(0)}
               </p>
             </div>
@@ -448,24 +488,8 @@ const BookingForm = () => {
 
       <ConfirmationDialog
         isOpen={showConfirmDialog}
-        onClose={async () => {
-          try {
-            await axios.delete("/api/carts");
-            const cartId = localStorage.getItem("cartId");
-            if (cartId) {
-              localStorage.removeItem(`checkoutEnd_${cartId}`);
-              localStorage.removeItem("cartId");
-            }
-            setShowConfirmDialog(false);
-            setIsNavigatingAway(true);
-            navigate("/");
-          } catch (error) {
-            toast.error("Lỗi khi hủy đơn hàng.");
-          }
-        }}
-        onConfirm={() => {
-          setShowConfirmDialog(false);
-        }}
+        onClose={handleCancel}
+        onConfirm={() => setShowConfirmDialog(false)}
         type="leaveBooking"
         confirmText="Ở lại"
         cancelText="Hủy đơn"
@@ -473,11 +497,8 @@ const BookingForm = () => {
 
       <ConfirmationDialog
         isOpen={showTimeoutDialog}
-        onClose={() => {}} // Không cho phép đóng
-        onConfirm={() => {
-          setShowTimeoutDialog(false);
-          navigate("/");
-        }}
+        onClose={() => { }}
+        onConfirm={() => navigate(`/events/${id}/bookings/select-ticket`)}
         type="timeout"
       />
     </>

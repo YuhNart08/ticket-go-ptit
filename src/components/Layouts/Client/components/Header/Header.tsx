@@ -1,26 +1,22 @@
 import { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
-import {
-  Ticket,
-  Search,
-  Menu,
-  ChevronDown,
-  User,
-  History,
-  LogOut,
-} from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Ticket, Search, Menu, ChevronDown, User, LogOut } from "lucide-react";
 import AuthContainer from "../../../../Auth/AuthContainer";
 import SearchBar from "./SearchBar";
 // @ts-expect-error - JSX file without type declarations
 import { useAuth } from "../../../../../contexts/AuthContext";
-import { setAuthModalHandler } from "../../../../../utils/axiosInterceptor";
+import {
+  openAuthModal,
+  setAuthModalHandler,
+} from "../../../../../utils/axiosInterceptor";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
-  const { user, logout } = useAuth();
+  const { user, logout, pendingOrdersCount } = useAuth();
+  const navigate = useNavigate();
 
   // Đăng ký handler để mở modal khi có lỗi 401
   useEffect(() => {
@@ -42,6 +38,14 @@ const Header = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  function toMyTickets() {
+    if (!user) {
+      openAuthModal();
+      return;
+    }
+    navigate("/my-tickets");
+  }
 
   return (
     <header className="w-full bg-[#2dc275] shadow-sm">
@@ -66,19 +70,20 @@ const Header = () => {
 
           {/* Nav menu */}
           <nav className="hidden md:flex items-center gap-4 lg:gap-6 font-semibold">
-            <Link
-              to="/my-tickets"
-              className="flex items-center gap-2 hover:text-black transition-colors duration-500 text-white text-sm lg:text-base"
+            <a
+              role="button"
+              onClick={toMyTickets}
+              className="relative flex items-center gap-2 hover:text-black transition-colors duration-500 text-white text-sm lg:text-base cursor-pointer"
             >
               <Ticket size={22} className="hidden lg:block" />
               Vé của tôi
-            </Link>
-            <Link
-              to="/about"
-              className="hover:text-black transition-colors duration-500 text-white text-sm lg:text-base"
-            >
-              Về chúng tôi
-            </Link>
+              {pendingOrdersCount > 0 && (
+                <span className="absolute top-[-5px] left-[-10px] flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-xs font-bold text-white">
+                  {pendingOrdersCount}
+                </span>
+              )}
+            </a>
+
             {user ? (
               <div className="relative" ref={userMenuRef}>
                 <button
@@ -91,9 +96,8 @@ const Header = () => {
                         ? user.avatar.startsWith("http")
                           ? user.avatar
                           : `/images/user/${user.avatar}`
-                        : `https://ui-avatars.com/api/?name=${
-                            user.fullName || user.email
-                          }&background=0D8ABC&color=fff`
+                        : `https://ui-avatars.com/api/?name=${user.fullName || user.email
+                        }&background=0D8ABC&color=fff`
                     }
                     alt="Avatar"
                     className="h-8 w-8 rounded-full object-cover border-2 border-white"
@@ -115,14 +119,6 @@ const Header = () => {
                       >
                         <Ticket size={20} className="text-gray-600" />
                         <span>Vé của tôi</span>
-                      </Link>
-                      <Link
-                        to="/my-history"
-                        className="flex items-center gap-3 px-4 py-3 text-sm hover:bg-gray-100"
-                        onClick={() => setIsUserMenuOpen(false)}
-                      >
-                        <History size={20} className="text-gray-600" />
-                        <span>Sự kiện của tôi</span>
                       </Link>
                       <Link
                         to="/account"
@@ -189,13 +185,6 @@ const Header = () => {
               onClick={() => setIsMenuOpen(false)}
             >
               Vé của tôi
-            </Link>
-            <Link
-              to="/about"
-              className="hover:text-amber-400 text-white py-2 border-b border-white/20"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Về chúng tôi
             </Link>
             {user ? (
               <div className="flex flex-col gap-2">

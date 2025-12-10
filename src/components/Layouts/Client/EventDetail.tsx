@@ -12,10 +12,12 @@ import {
 } from "@/components/ui/accordion";
 // @ts-expect-error - JSX file without type declarations
 import { useAuth } from "../../../contexts/AuthContext";
-import { openAuthModal } from "../../../utils/axiosInterceptor";
+import axios, { openAuthModal } from "../../../utils/axiosInterceptor";
 import CategoryFilterBar from "./CategoryFilterBar";
 import { categories } from "@/constants/data/categories";
 import { getDisplayPrice } from "@/utils/getDisplayPrice";
+import ConfirmationDialog from "@/pages/ConfirmationDialog";
+import { toast } from "sonner";
 
 const EventDetail = () => {
   const { id } = useParams();
@@ -24,6 +26,11 @@ const EventDetail = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const { user } = useAuth();
+
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [showTimeoutDialog, setShowTimeoutDialog] = useState(false);
+  const [cartDetailsForDialog, setCartDetailsForDialog] = useState<any[]>([]);
+  const [countdownEndTime, setCountdownEndTime] = useState<number | undefined>(undefined);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -62,12 +69,72 @@ const EventDetail = () => {
     );
   }
 
-  const handleSelectTicket = (eventId: string) => {
+  const handleCancel = async () => {
+    try {
+      await axios.delete("/api/carts");
+      const cartId = localStorage.getItem("cartId");
+      if (cartId) {
+        localStorage.removeItem(`checkoutEnd_${cartId}`);
+        localStorage.removeItem("cartId");
+      }
+      setShowConfirmDialog(false);
+      navigate(`/events/${id}/bookings/select-ticket`);
+    } catch (error) {
+      toast.error("Lỗi khi hủy đơn hàng.");
+    }
+  }
+
+  const handleConfirm = () => {
+    setShowConfirmDialog(false);
+    navigate(`/events/${id}/bookings/select-ticket/booking-form`);
+  }
+
+  const handleDialogTimeout = () => {
+    handleTimeout();
+    setShowConfirmDialog(false);
+    setShowTimeoutDialog(true);
+  };
+
+  const handleTimeout = async () => {
+    try {
+      await axios.delete("/api/carts");
+      const cartId = localStorage.getItem("cartId");
+      if (cartId) {
+        localStorage.removeItem(`checkoutEnd_${cartId}`);
+        localStorage.removeItem("cartId");
+      }
+    } catch (error) {
+      toast.error("Lỗi khi hủy đơn hàng.");
+    }
+  };
+
+  const handleSelectTicket = async (eventId: string) => {
     if (!user) {
       openAuthModal();
       return;
     }
-    navigate(`/events/${eventId}/bookings/select-ticket`);
+    try {
+      const response = await axios.get(`/api/carts`);
+      const result = response.data;
+
+      const cartId = result.cartId;
+      const cartDetails = result.cartDetails;
+
+      if (cartId && cartDetails && cartDetails.length > 0) {
+        const storageKey = `checkoutEnd_${cartId}`;
+        const expiresAt = localStorage.getItem(storageKey);
+
+        if (expiresAt && Number(expiresAt) > Date.now()) {
+          setCartDetailsForDialog(cartDetails);
+          setCountdownEndTime(Number(expiresAt));
+          setShowConfirmDialog(true);
+          return;
+        }
+      }
+      navigate(`/events/${eventId}/bookings/select-ticket`);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   if (!event)
@@ -206,9 +273,8 @@ const EventDetail = () => {
                   <AccordionItem
                     key={ticket.id}
                     value={`ticket-${ticket.id}`}
-                    className={`border-none ${
-                      index % 2 === 0 ? "bg-[#2f3033]" : "bg-[#38383d]"
-                    }`}
+                    className={`border-none ${index % 2 === 0 ? "bg-[#2f3033]" : "bg-[#38383d]"
+                      }`}
                   >
                     <div className="flex justify-between items-center py-3 px-4">
                       {/* LEFT: ticket name + accordion trigger*/}
@@ -219,11 +285,10 @@ const EventDetail = () => {
                       {/* RIGHT: ticket price and status */}
                       <div className="text-left sm:text-right">
                         <p
-                          className={`font-bold py-2 ${
-                            ticket.quantity === 0
-                              ? "text-gray-400"
-                              : "text-[#2dc275]"
-                          }`}
+                          className={`font-bold py-2 ${ticket.quantity === 0
+                            ? "text-gray-400"
+                            : "text-[#2dc275]"
+                            }`}
                         >
                           {ticket.price.toLocaleString("de-DE")} đ
                         </p>
@@ -256,6 +321,25 @@ const EventDetail = () => {
           </div>
         </div>
       </div>
+
+      <ConfirmationDialog
+        isOpen={showConfirmDialog}
+        onClose={handleCancel}
+        onConfirm={handleConfirm}
+        type="continueBooking"
+        cartItems={cartDetailsForDialog}
+        onTimeout={handleDialogTimeout}
+        countdownEndTime={countdownEndTime}
+        confirmText="Quay lại đơn cũ"
+        cancelText="Hủy đơn, mua vé mới"
+      />
+
+      <ConfirmationDialog
+        isOpen={showTimeoutDialog}
+        onClose={() => { }}
+        onConfirm={() => navigate(`/events/${id}/bookings/select-ticket`)}
+        type="timeout"
+      />
     </>
   );
 };

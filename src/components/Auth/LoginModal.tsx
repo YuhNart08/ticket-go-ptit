@@ -3,7 +3,7 @@ import { X, Eye, EyeOff, AlertCircle, CheckCircle2 } from "lucide-react";
 import type { LoginCredentials } from "../../constants/types/types";
 // @ts-expect-error - JSX file without type declarations
 import { useAuth } from "../../contexts/AuthContext";
-import axios from "axios";
+import axios from "@/utils/axiosInterceptor";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 
@@ -12,13 +12,12 @@ interface LoginModalProps {
   onClose: () => void;
   onSwitchToRegister: () => void;
 }
-
 const LoginModal: React.FC<LoginModalProps> = ({
   isOpen,
   onClose,
   onSwitchToRegister,
 }) => {
-  const { login } = useAuth();
+  const { login, refreshPendingOrdersCount } = useAuth();
   const navigate = useNavigate();
   const [formData, setFormData] = useState<LoginCredentials>({
     emailOrPhone: "",
@@ -57,7 +56,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
 
     try {
       const response = await axios.post("/api/auth/login", {
-        username: formData.emailOrPhone,
+        emailOrPhone: formData.emailOrPhone,
         password: formData.password,
       });
 
@@ -67,6 +66,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
 
       const { token } = response.data;
       login(token);
+      refreshPendingOrdersCount();
       const decodedUser = jwtDecode(token) as { role?: { name?: string } };
 
       setShowSuccess(true);
@@ -89,7 +89,8 @@ const LoginModal: React.FC<LoginModalProps> = ({
         const backendErrors: Record<string, string> = {};
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         err.response.data.errors.forEach((error: any) => {
-          if (error.path === "username") backendErrors.username = error.message;
+          if (error.path === "emailOrPhone")
+            backendErrors.username = error.message;
           else if (error.path === "password")
             backendErrors.password = error.message;
         });
@@ -97,9 +98,9 @@ const LoginModal: React.FC<LoginModalProps> = ({
       } else {
         alert(
           "Lỗi: " +
-            (err.response?.data?.message ||
-              err.response?.data?.error ||
-              err.message)
+          (err.response?.data?.message ||
+            err.response?.data?.error ||
+            err.message)
         );
       }
       setIsSubmitting(false);
@@ -168,24 +169,23 @@ const LoginModal: React.FC<LoginModalProps> = ({
               onChange={handleInputChange}
               placeholder="Nhập email hoặc số điện thoại"
               autoComplete="username"
-              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${
-                validationErrors.username
-                  ? "border-red-500 focus:ring-red-500"
-                  : "border-gray-300 focus:ring-green-500 focus:border-transparent"
-              }`}
+              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${validationErrors.username
+                ? "border-red-500 focus:ring-red-500"
+                : "border-gray-300 focus:ring-green-500 focus:border-transparent"
+                }`}
               disabled={isSubmitting}
-              aria-invalid={!!validationErrors.username}
+              aria-invalid={!!validationErrors.emailOrPhone}
               aria-describedby={
-                validationErrors.username ? "emailOrPhone-error" : undefined
+                validationErrors.emailOrPhone ? "emailOrPhone-error" : undefined
               }
             />
-            {validationErrors.username && (
+            {validationErrors.emailOrPhone && (
               <div
                 id="emailOrPhone-error"
                 className="flex items-center space-x-1 text-red-600 text-sm mt-2"
               >
                 <AlertCircle className="w-4 h-4" />
-                <span>{validationErrors.username}</span>
+                <span>{validationErrors.emailOrPhone}</span>
               </div>
             )}
           </div>
@@ -207,11 +207,10 @@ const LoginModal: React.FC<LoginModalProps> = ({
                 onChange={handleInputChange}
                 placeholder="Nhập mật khẩu của bạn"
                 autoComplete="current-password"
-                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors pr-12 ${
-                  validationErrors.password
-                    ? "border-red-500 focus:ring-red-500"
-                    : "border-gray-300 focus:ring-green-500 focus:border-transparent"
-                }`}
+                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors pr-12 ${validationErrors.password
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-300 focus:ring-green-500 focus:border-transparent"
+                  }`}
                 disabled={isSubmitting}
                 aria-invalid={!!validationErrors.password}
                 aria-describedby={
@@ -252,8 +251,8 @@ const LoginModal: React.FC<LoginModalProps> = ({
             {isSubmitting
               ? "Đang xử lý..."
               : showSuccess
-              ? "Thành công!"
-              : "Đăng nhập"}
+                ? "Thành công!"
+                : "Đăng nhập"}
           </button>
 
           {/* Trạng thái tải */}

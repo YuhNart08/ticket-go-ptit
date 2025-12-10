@@ -1,5 +1,4 @@
 import Home from "../pages/Home";
-import About from "../pages/About";
 import MyTickets from "../pages/MyTickets";
 import DefaultLayout from "../components/Layouts/Client/DefaultLayout/DefaultLayout";
 import Contact from "../pages/Contact";
@@ -29,12 +28,14 @@ import OrderShow from "../pages/admin/order/OrderShow";
 // @ts-expect-error - JSX file without type declarations
 import OrderDetail from "../pages/admin/order/OrderDetail";
 import SelectTicketLayout from "../components/Layouts/Client/SelectTicketLayout/SelectTicketLayout";
+import ThanksLayout from "../components/Layouts/Client/ThanksLayout/ThanksLayout";
 import BookingForm from "@/pages/BookingForm";
 import PaymentForm from "@/pages/PaymentForm";
+import Payment from "@/pages/Payment";
+import ThanksPage from "@/pages/ThanksPage";
 
 const publicRoutes = [
   { path: "/", component: Home, layout: DefaultLayout },
-  { path: "/about", component: About, layout: DefaultLayout },
   { path: "/my-tickets", component: MyTickets, layout: DefaultLayout },
   { path: "/account", component: AccountSettings, layout: DefaultLayout },
   { path: "/contact", component: Contact, layout: DefaultLayout },
@@ -54,6 +55,8 @@ const publicRoutes = [
     component: PaymentForm,
     layout: SelectTicketLayout,
   },
+  { path: "/payment", component: Payment, layout: DefaultLayout },
+  { path: "/thanks", component: ThanksPage, layout: ThanksLayout },
   { path: "/search", component: AllEvents, layout: DefaultLayout },
   { path: "*", component: NotFound, layout: null },
 ];

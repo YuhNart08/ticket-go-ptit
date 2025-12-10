@@ -1,26 +1,35 @@
-import { useEffect, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { Bell } from "lucide-react";
 
-type DialogType = "leaveBooking" | "timeout";
+type DialogType = "leaveBooking" | "timeout" | "continueBooking";
 
+interface CartItem {
+    id: number;
+    quantity: number;
+    price: number;
+    ticketType: { type: string };
+}
 
 interface ConfirmationDialogProps {
     isOpen: boolean;
     onClose: () => void;
     onConfirm: () => void;
     type: DialogType;
+    cartItems?: CartItem[];
     confirmText?: string;
     cancelText?: string;
+    countdownEndTime?: number;
+    onTimeout?: () => void;
 }
 
 const dialogs: Record<DialogType, {
     title: string;
     question: ReactNode;
     details: string[];
-    buttonLayout: "confirm-cancel" | "single-confirm";
+    buttonLayout: "confirm-cancel" | "single-confirm" | "continue-cancel";
 }> = {
     leaveBooking: {
-        title: "Hủy đơn hàng?",
+        title: "Hủy đơn hàng",
         question: "Bạn có chắc chắn muốn tiếp tục?",
         details: [
             "Bạn sẽ mất vị trí mình đã lựa chọn.",
@@ -29,12 +38,16 @@ const dialogs: Record<DialogType, {
         buttonLayout: "confirm-cancel",
     },
     timeout: {
-        title: "Hết thời gian giữ vé!",
-        question: <Bell className="w-16 h-16 text-yellow-500 mx-auto" />,
-        details: [
-            "Đã hết thời gian giữ vé. Vui lòng đặt lại vé mới."
-        ],
+        title: "Hết thời gian giữ vé",
+        question: <><Bell className="w-16 h-16 text-[#2dc275] mx-auto" /><p className="mt-2">Đã hết thời gian giữ vé. Vui lòng đặt lại vé mới.</p></>,
+        details: [],
         buttonLayout: "single-confirm",
+    },
+    continueBooking: {
+        title: "Đơn hàng chưa hoàn thành",
+        question: "Bạn đang có đơn hàng chưa hoàn tất. Bạn có muốn tiếp tục?",
+        details: [],
+        buttonLayout: "continue-cancel",
     },
 };
 
@@ -43,9 +56,14 @@ const ConfirmationDialog = ({
     onClose,
     onConfirm,
     type,
+    cartItems = [],
     confirmText = "Hủy đơn",
     cancelText = "Ở lại",
+    countdownEndTime,
+    onTimeout,
 }: ConfirmationDialogProps) => {
+    const [countdownText, setCountdownText] = useState("");
+
     useEffect(() => {
         if (isOpen) {
             document.body.style.overflow = 'hidden';
@@ -57,6 +75,28 @@ const ConfirmationDialog = ({
         };
     }, [isOpen]);
 
+    useEffect(() => {
+        if (isOpen && type === 'continueBooking' && countdownEndTime) {
+            const interval = setInterval(() => {
+                const timeLeft = Math.max(0, Math.round((countdownEndTime - Date.now()) / 1000));
+
+                if (timeLeft <= 0) {
+                    clearInterval(interval);
+                    onTimeout?.();
+                    return;
+                }
+
+                const minutes = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+                const seconds = (timeLeft % 60).toString().padStart(2, '0');
+                setCountdownText(`(${minutes}:${seconds})`);
+            }, 1000);
+
+            return () => clearInterval(interval);
+        } else {
+            setCountdownText("");
+        }
+    }, [isOpen, type, countdownEndTime, onTimeout]);
+
     const { title, question, details, buttonLayout } = dialogs[type];
 
     return (
@@ -66,27 +106,29 @@ const ConfirmationDialog = ({
                     <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4 text-center">
                         <h3 className="font-bold text-xl text-gray-800 mb-3">{title}</h3>
                         <div className="text-gray-600 mb-4">{question}</div>
-                        <ul className="text-gray-600 mb-6 text-left list-disc list-inside space-y-1">
-                            {details.map((item, index) => (
-                                <li key={index}>
-                                    {item}
-                                </li>
-                            ))}
+                        <ul className={`text-gray-600 ${type === 'continueBooking' ? 'text-center' : 'text-left'} list-disc list-inside`}>
+                            {type === 'continueBooking' && cartItems.length > 0
+                                ? cartItems.map(item => (
+                                    <li key={item.id}>{`${item.quantity} x ${item.ticketType.type}`}</li>
+                                ))
+                                : details.map((item, index) => (
+                                    <li key={index}>{item}</li>
+                                ))}
                         </ul>
-                        <div className="flex justify-center items-center gap-4 mt-8">
-                            {buttonLayout === "confirm-cancel" && (
+                        <div className={buttonLayout == 'continue-cancel' ? "flex flex-col-reverse justify-center items-center gap-4 mt-6" : "flex justify-center items-center gap-4 mt-6"}>
+                            {(buttonLayout === "confirm-cancel" || buttonLayout === "continue-cancel") && (
                                 <button
                                     onClick={onClose}
-                                    className="flex-1 px-4 py-2.5 rounded-md bg-white text-red-500 border border-red-500 font-semibold hover:bg-red-50 transition-colors"
+                                    className={`flex-1 px-4 py-2.5 rounded-md bg-white text-red-500 border border-red-500 font-semibold hover:bg-red-50 transition-colors ${buttonLayout === 'continue-cancel' ? 'w-full' : ''}`}
                                 >
                                     {cancelText}
                                 </button>
                             )}
                             <button
                                 onClick={onConfirm}
-                                className={`flex-1 px-4 py-2.5 rounded-md bg-[#2dc275] text-white font-semibold hover:bg-green-700 transition-colors ${buttonLayout === 'single-confirm' ? 'w-full' : ''}`}
+                                className={`flex-1 px-4 py-2.5 rounded-md bg-[#2dc275] text-white font-semibold hover:bg-green-700 transition-colors ${buttonLayout === 'single-confirm' || buttonLayout === 'continue-cancel' ? 'w-full' : ''}`}
                             >
-                                {buttonLayout === 'single-confirm' ? "Đặt vé mới" : confirmText}
+                                {buttonLayout === 'single-confirm' ? "Đặt vé mới" : (buttonLayout === 'continue-cancel' ? `Quay lại đơn cũ ${countdownText}`.trim() : confirmText)}
                             </button>
                         </div>
                     </div>

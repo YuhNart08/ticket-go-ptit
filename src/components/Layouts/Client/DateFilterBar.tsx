@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { format } from "date-fns";
+import { useState, useEffect } from "react";
+import { format, parse } from "date-fns";
 import { CalendarIcon, X } from "lucide-react";
 import {
   Popover,
@@ -20,10 +20,23 @@ interface DateRange {
 }
 
 const DateFilterBar = ({ selectedDate, onDateChange }: DateFilterBarProps) => {
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [dateRange, setDateRange] = useState<DateRange>({
     from: undefined,
     to: undefined,
   });
+
+  useEffect(() => {
+    if (selectedDate) {
+      const [fromString, toString] = selectedDate.split(',');
+      setDateRange({
+        from: fromString ? parse(fromString, "yyyy-MM-dd", new Date()) : undefined,
+        to: toString ? parse(toString, "yyyy-MM-dd", new Date()) : undefined,
+      });
+    } else {
+      setDateRange({ from: undefined, to: undefined });
+    }
+  }, [selectedDate]);
 
   const handleDateSelect = (day: Date | undefined) => {
     if (!day) return;
@@ -31,40 +44,43 @@ const DateFilterBar = ({ selectedDate, onDateChange }: DateFilterBarProps) => {
     if (!dateRange.from) {
       setDateRange({ from: day, to: undefined });
     } else if (!dateRange.to) {
-      if (day < dateRange.from) {
-        setDateRange({ from: day, to: dateRange.from });
-        const fromDate = format(day, "yyyy-MM-dd");
-        const toDate = format(dateRange.from, "yyyy-MM-dd");
-        onDateChange(`${fromDate},${toDate}`);
-      } else {
-        setDateRange({ from: dateRange.from, to: day });
-        const fromDate = format(dateRange.from, "yyyy-MM-dd");
-        const toDate = format(day, "yyyy-MM-dd");
-        onDateChange(`${fromDate},${toDate}`);
-      }
+      setDateRange(prev => ({
+        from: day < prev.from! ? day : prev.from,
+        to: day < prev.from! ? prev.from : day,
+      }));
     } else {
       setDateRange({ from: day, to: undefined });
     }
   };
 
-  const handleClear = () => {
+  const handleApply = () => {
+    if (dateRange.from && dateRange.to) {
+      const fromDate = format(dateRange.from, "yyyy-MM-dd");
+      const toDate = format(dateRange.to, "yyyy-MM-dd");
+      onDateChange(`${fromDate},${toDate}`);
+      setIsPopoverOpen(false);
+    }
+  };
+
+  const handleResetInPopover = () => {
     setDateRange({ from: undefined, to: undefined });
+    onDateChange("");
+    setIsPopoverOpen(false);
+  };
+
+  const handleClearOutside = () => {
     onDateChange("");
   };
 
   const isInRange = (date: Date) => {
     if (!dateRange.from || !dateRange.to) return false;
-    return date > dateRange.from && date < dateRange.to;
+    return date >= dateRange.from && date <= dateRange.to;
   };
 
   const displayText = () => {
-    if (dateRange.from && dateRange.to) {
-      return `${format(dateRange.from, "dd/MM/yyyy")} - ${format(
-        dateRange.to,
-        "dd/MM/yyyy"
-      )}`;
-    } else if (dateRange.from) {
-      return `${format(dateRange.from, "dd/MM/yyyy")} - ...`;
+    if (selectedDate) {
+      const [from, to] = selectedDate.split(',');
+      return `${format(parse(from, "yyyy-MM-dd", new Date()), "dd/MM/yyyy")} - ${format(parse(to, "yyyy-MM-dd", new Date()), "dd/MM/yyyy")}`;
     }
     return "Chọn khoảng thời gian";
   };
@@ -77,7 +93,7 @@ const DateFilterBar = ({ selectedDate, onDateChange }: DateFilterBarProps) => {
             Lọc theo ngày:
           </label>
 
-          <Popover>
+          <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
             <PopoverTrigger
               asChild
               className="flex items-center gap-3 justify-center"
@@ -105,15 +121,9 @@ const DateFilterBar = ({ selectedDate, onDateChange }: DateFilterBarProps) => {
                 {/* Calendar */}
                 <Calendar
                   mode="single"
-                  selected={dateRange.to || dateRange.from}
+                  selected={undefined}
                   onSelect={handleDateSelect}
                   className="bg-[#2a2a2a] text-white"
-                  disabled={(date) => {
-                    if (dateRange.from && dateRange.to) {
-                      return date > dateRange.from && date < dateRange.to;
-                    }
-                    return false;
-                  }}
                   modifiers={{
                     inRange: isInRange,
                   }}
@@ -123,6 +133,8 @@ const DateFilterBar = ({ selectedDate, onDateChange }: DateFilterBarProps) => {
                       color: "#000",
                       opacity: 1,
                     },
+                    from: { backgroundColor: '#2dc275', color: 'white', borderRadius: '50%' },
+                    to: { backgroundColor: '#2dc275', color: 'white', borderRadius: '50%' },
                   }}
                 />
 
@@ -130,7 +142,7 @@ const DateFilterBar = ({ selectedDate, onDateChange }: DateFilterBarProps) => {
                 {(dateRange.from || dateRange.to) && (
                   <div className="flex gap-2 pt-2 border-t border-gray-700">
                     <Button
-                      onClick={handleClear}
+                      onClick={handleResetInPopover}
                       variant="outline"
                       className="flex-1 bg-gray-700 hover:bg-gray-600 border-gray-600 text-white"
                     >
@@ -138,7 +150,7 @@ const DateFilterBar = ({ selectedDate, onDateChange }: DateFilterBarProps) => {
                     </Button>
                     {dateRange.from && dateRange.to && (
                       <Button
-                        onClick={() => {}} // Popover will close automatically
+                        onClick={handleApply}
                         className="flex-1 bg-[#2dc275] hover:bg-[#25a85f] text-white border-0"
                       >
                         Áp dụng
@@ -152,7 +164,7 @@ const DateFilterBar = ({ selectedDate, onDateChange }: DateFilterBarProps) => {
 
           {selectedDate && (
             <button
-              onClick={handleClear}
+              onClick={handleClearOutside}
               className="px-4 py-2 rounded-lg bg-gray-600 text-white hover:bg-gray-700 transition flex items-center gap-2"
             >
               <X size={16} />
