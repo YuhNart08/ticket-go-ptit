@@ -19,7 +19,7 @@ export default function UserShow() {
       setLoading(true);
       setError(null);
 
-      const res = await axios.get(`/api/users?page=${page}`);
+      const res = await axios.get(`/api/users?page=${page}&limit=8`);
       const data = res.data;
 
       const fetchedUsers = data.users || data.data || [];
