@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "@/utils/axiosInterceptor";
+import { formatCurrency } from "@/utils/utils";
 
 export default function OrderDetail() {
   const { id } = useParams();
@@ -18,12 +19,6 @@ export default function OrderDetail() {
 
     fetchOrderDetails();
   }, [id]);
-
-  const formatCurrency = (num) =>
-    new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(num || 0);
 
   return (
     <div className="p-6">

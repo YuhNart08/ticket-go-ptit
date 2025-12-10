@@ -19,7 +19,7 @@ export default function EventShow() {
       setLoading(true);
       setError(null);
 
-      const res = await axios.get(`/api/events?page=${page}`);
+      const res = await axios.get(`/api/events?page=${page}&limit=8`);
       const data = res.data;
 
       const fetchedEvents = data.events || data.data || [];
