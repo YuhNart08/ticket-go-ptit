@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "@/utils/axiosInterceptor";
-import { CATEGORIES } from "../../../../../backend_ticketgo/src/config/constant";
+import { CATEGORIES } from "../../../constants/config/constant";
 import { formatCurrency } from "@/utils/utils";
 
 export default function EventCreate() {

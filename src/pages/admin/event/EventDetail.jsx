@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import axios from "@/utils/axiosInterceptor";
-import { CATEGORIES } from "../../../../../backend_ticketgo/src/config/constant.js";
+import { CATEGORIES } from "../../../constants/config/constant.js";
 import TicketManagement from "../../../components/Layouts/admin/components/TicketManagement.jsx";
 import { formatCurrency } from "@/utils/utils";
 
