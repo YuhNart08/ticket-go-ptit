@@ -193,35 +193,58 @@ const TicketCardItem: React.FC<TicketCardItemProps> = ({ ticket }) => {
 
       {/* QR Code Modal */}
       {showQRModal && ticket.status.toUpperCase() === 'COMPLETED' && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4" onClick={() => { setShowQRModal(false); setShowFullQR(false); }}>
-          <div className="bg-[#4c556a] rounded-3xl w-full max-w-4xl overflow-hidden relative shadow-2xl" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
+          onClick={() => {
+            setShowQRModal(false);
+            setShowFullQR(false);
+          }}
+        >
+          <div
+            className="relative w-full max-w-4xl overflow-hidden rounded-[28px] bg-gradient-to-br from-[#4c556a] via-[#3b4356] to-[#252b39] shadow-[0_24px_80px_rgba(0,0,0,0.8)] border border-white/10"
+            onClick={(e) => e.stopPropagation()}
+          >
             {/* Close Button */}
             <button
-              onClick={() => { setShowQRModal(false); setShowFullQR(false); }}
-              className="absolute top-4 right-4 z-10 text-white hover:text-gray-200 transition-colors bg-black/30 rounded-full p-2"
+              onClick={() => {
+                setShowQRModal(false);
+                setShowFullQR(false);
+              }}
+              className="absolute top-4 right-4 z-10 text-white/80 hover:text-white transition-colors bg-black/40 backdrop-blur-sm rounded-full p-2"
             >
               <X size={20} />
             </button>
 
             {/* Header */}
-            <div className="px-6 pt-6">
-              <h2 className="text-white text-xl md:text-2xl font-bold pr-10">
-                {ticket.event_name}
-              </h2>
+            <div className="px-6 pt-6 pb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-2 border-b border-white/10">
+              <div className="space-y-1 pr-10">
+                <p className="text-xs uppercase tracking-[0.18em] text-[#9ca3af] font-semibold">
+                  Vé tham gia sự kiện
+                </p>
+                <h2 className="text-white text-xl md:text-2xl font-bold leading-snug line-clamp-2">
+                  {ticket.event_name}
+                </h2>
+              </div>
+              <div className="flex items-center gap-2 text-xs md:text-sm text-white/70">
+                <span className="inline-flex items-center gap-1 rounded-full bg-black/30 px-3 py-1 border border-white/10">
+                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#2dc275]" />
+                  {getStatusDisplay(ticket.status)}
+                </span>
+              </div>
             </div>
 
             {/* Main Content */}
-            <div className="p-6 pt-4 grid grid-cols-1 md:grid-cols-[1.15fr_0.85fr] gap-4 md:gap-6 items-start">
+            <div className="p-6 grid grid-cols-1 md:grid-cols-[1.2fr_0.9fr] gap-5 md:gap-7 items-start">
               {/* Left: Banner + Info */}
               <div className="space-y-4">
                 {/* Banner card */}
-                <div className="w-full rounded-xl overflow-hidden bg-black/60 border border-white/10">
+                <div className="w-full rounded-2xl overflow-hidden bg-black/60 border border-white/10 shadow-inner">
                   {ticket.event_banner ? (
                     <div className="w-full aspect-[16/9]">
                       <img
                         src={`/images/event/${ticket.event_banner}`}
                         alt={ticket.event_name}
-                        className="w-full h-full object-contain bg-black"
+                        className="w-full h-full object-cover bg-black"
                       />
                     </div>
                   ) : (
@@ -231,73 +254,101 @@ const TicketCardItem: React.FC<TicketCardItemProps> = ({ ticket }) => {
                   )}
                 </div>
 
-                <div className="bg-black/20 rounded-xl p-4 text-white space-y-3 border border-white/10">
-                  <div>
-                    <p className="text-xs uppercase tracking-wide opacity-80">Mã</p>
-                    <p className="text-lg font-bold break-all">{ticket.ticket_id}</p>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-white">
+                  <div className="bg-black/20 rounded-xl p-3 md:p-4 border border-white/10 flex flex-col gap-1">
+                    <p className="text-[11px] uppercase tracking-wide text-white/60">Mã vé</p>
+                    <p className="text-sm md:text-base font-semibold break-all">{ticket.ticket_id}</p>
                   </div>
-                  <div>
-                    <p className="text-xs uppercase tracking-wide opacity-80">Loại vé</p>
-                    <p className="text-base font-semibold text-[#2dc275]">{ticket.ticket_type}</p>
+                  <div className="bg-black/20 rounded-xl p-3 md:p-4 border border-white/10 flex flex-col gap-1">
+                    <p className="text-[11px] uppercase tracking-wide text-white/60">Loại vé</p>
+                    <p className="text-sm md:text-base font-semibold text-[#2dc275]">{ticket.ticket_type}</p>
+                    {ticket.quantity > 1 && (
+                      <p className="text-[11px] text-white/60">Số lượng: {ticket.quantity}</p>
+                    )}
                   </div>
-                  <div>
-                    <p className="text-xs uppercase tracking-wide opacity-80">Thời gian</p>
+                  <div className="bg-black/20 rounded-xl p-3 md:p-4 border border-white/10 flex flex-col gap-1">
+                    <p className="text-[11px] uppercase tracking-wide text-white/60">Thời gian</p>
                     <p className="text-sm font-medium">{ticket.event_duration || "14:00 - 23:59"}</p>
-                    <p className="text-sm font-medium">{ticket.event_date}</p>
+                    <p className="text-xs md:text-sm font-medium text-white/80">{ticket.event_date}</p>
                   </div>
                 </div>
               </div>
 
               {/* Right: QR Code */}
-              <div className="bg-white rounded-2xl p-5 flex flex-col items-center shadow-lg min-h-[260px]">
-                <div className="relative cursor-pointer" onClick={() => setShowFullQR(true)}>
-                  <QRCode
-                    value={`TICKET-${ticket.ticket_id}-${ticket.ticket_type}-${selectedTicketIndex + 1}`}
-                    size={200}
-                    level="H"
-                    className={`${showFullQR ? "" : "blur-[4px] opacity-80 transition-all"}`}
-                  />
-                  {!showFullQR && (
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-12 h-12 rounded-full bg-white/85 flex items-center justify-center shadow-md">
-                        <Lock size={24} className="text-gray-700" />
+              <div className="h-full flex flex-col">
+                <div className="relative flex-1 rounded-2xl bg-white shadow-[0_18px_45px_rgba(15,23,42,0.4)] px-5 py-5 flex flex-col items-center">
+                  {/* Top label */}
+                  <div className="w-full flex items-center justify-between mb-4 text-[11px] font-medium text-gray-500">
+                    <span className="uppercase tracking-[0.16em] text-gray-500">Mã QR vào cổng</span>
+                    <span className="rounded-full bg-gray-100 px-3 py-1 border border-gray-200 text-[10px]">
+                      Chỉ dùng khi check-in
+                    </span>
+                  </div>
+
+                  <div className="relative cursor-pointer" onClick={() => setShowFullQR(true)}>
+                    <QRCode
+                      value={`TICKET-${ticket.ticket_id}-${ticket.ticket_type}-${selectedTicketIndex + 1}`}
+                      size={200}
+                      level="H"
+                      className={`${showFullQR ? "" : "blur-[4px] opacity-80 transition-all"}`}
+                    />
+                    {!showFullQR && (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center shadow-md">
+                          <Lock size={22} className="text-gray-700" />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <p className="text-gray-600 text-xs md:text-sm mt-4 font-medium text-center max-w-xs">
+                    Nhấn vào ảnh để xem rõ mã QR. Vui lòng không chia sẻ mã này cho người khác.
+                  </p>
+
+                  {ticket.quantity > 1 && (
+                    <div className="mt-5 w-full flex flex-col items-center gap-2">
+                      <p className="text-[11px] text-gray-500 font-medium">Chọn số thứ tự vé</p>
+                      <div className="flex flex-wrap justify-center gap-2">
+                        {Array.from({ length: ticket.quantity }).map((_, index) => (
+                          <button
+                            key={index}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedTicketIndex(index);
+                              setShowFullQR(false);
+                            }}
+                            className={`w-9 h-9 md:w-10 md:h-10 rounded-xl text-sm font-semibold transition-all border ${
+                              selectedTicketIndex === index
+                                ? 'bg-[#2dc275] text-white border-[#2dc275] shadow-md shadow-[#2dc275]/60'
+                                : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'
+                            }`}
+                          >
+                            {index + 1}
+                          </button>
+                        ))}
                       </div>
                     </div>
                   )}
                 </div>
-                <p className="text-gray-600 text-sm mt-4 font-medium">
-                  Nhấn vào ảnh để xem mã QR
-                </p>
-
-                {ticket.quantity > 1 && (
-                  <div className="flex justify-center gap-2 mt-4">
-                    {Array.from({ length: ticket.quantity }).map((_, index) => (
-                      <button
-                        key={index}
-                        onClick={(e) => { e.stopPropagation(); setSelectedTicketIndex(index); setShowFullQR(false); }}
-                        className={`w-10 h-10 rounded-lg font-bold transition-all ${
-                          selectedTicketIndex === index
-                            ? 'bg-[#2dc275] text-white'
-                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                        }`}
-                      >
-                        {index + 1}
-                      </button>
-                    ))}
-                  </div>
-                )}
               </div>
             </div>
 
             {/* Footer Instruction */}
-            <div className="px-6 pb-6 text-center text-white/80 text-sm">
-              Vuốt ngang để xem vé khác
+            <div className="px-6 pb-5 pt-3 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-2 text-[12px] md:text-sm text-white/75">
+              <p>Vuốt ngang để xem vé khác của cùng đơn hàng.</p>
+              <p className="text-white/60">Hãy đến đúng giờ và chuẩn bị sẵn mã QR để check-in nhanh chóng.</p>
             </div>
 
             {/* Fullscreen QR when unlocked */}
             {showFullQR && (
-              <div className="absolute inset-0 bg-black/80 flex items-center justify-center p-6" onClick={() => setShowFullQR(false)}>
-                <div className="bg-white rounded-2xl p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+              <div
+                className="absolute inset-0 bg-black/80 flex items-center justify-center p-6"
+                onClick={() => setShowFullQR(false)}
+              >
+                <div
+                  className="bg-white rounded-2xl p-6 shadow-2xl max-w-[360px] w-full flex flex-col items-center"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <QRCode
                     value={`TICKET-${ticket.ticket_id}-${ticket.ticket_type}-${selectedTicketIndex + 1}`}
                     size={320}
