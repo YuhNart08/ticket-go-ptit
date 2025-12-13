@@ -92,6 +92,7 @@ const MyTickets = () => {
               dateStr = `${day} Tháng ${month} ${year}`;
             }
 
+            console.log('Event data:', event); // Debug: check event structure
             mappedTickets.push({
               id: item.id || Math.random(),
               ticket_id: order.id ? `${order.id}` : "N/A",
@@ -99,6 +100,7 @@ const MyTickets = () => {
               event_date: dateStr,
               event_location: event?.location,
               event_duration: event?.duration,
+              event_banner: event?.bannerUrl,
               status: order.status,
               ticket_type: item.ticketType?.type || "Không xác định",
               quantity: item.quantity

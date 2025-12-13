@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Pagination from "../../../components/Layouts/admin/components/Pagination.jsx";
 import axios from "@/utils/axiosInterceptor";
-import { STATUS_ORDERS } from "../../../../../backend_ticketgo/src/config/constant.js";
+import { STATUS_ORDERS } from "../../../constants/config/constant.js";
 
 export default function OrderShow() {
   const [orders, setOrders] = useState([]);
