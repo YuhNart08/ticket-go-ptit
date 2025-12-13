@@ -187,8 +187,10 @@ const BookingForm = () => {
             let receiverPhone: string | undefined;
             let receiverEmail: string | undefined;
 
-            // Ưu tiên state từ trang Payment, sau đó là localStorage, cuối cùng mới tạo mới
-            if (location.state?.paymentExpiresAt) {
+            // Ưu tiên state từ trang Event Details, sau đó là Payment, sau đó là localStorage, cuối cùng mới tạo mới
+            if (location.state?.countdownEndTime) {
+              expiresAt = location.state.countdownEndTime;
+            } else if (location.state?.paymentExpiresAt) {
               expiresAt = location.state.paymentExpiresAt;
               receiverName = location.state.receiverName;
               receiverPhone = location.state.receiverPhone;
