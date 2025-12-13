@@ -9,18 +9,18 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "https://d34d64e4bca8.ngrok-free.app",
+        target: "http://localhost:9092",
         changeOrigin: true,
         headers: {
-          "ngrok-skip-browser-warning": "true",
-        },
+          'ngrok-skip-browser-warning': 'true'
+        }
       },
       "/images": {
-        target: " https://d34d64e4bca8.ngrok-free.app",
+        target: "http://localhost:9092",
         changeOrigin: true,
         headers: {
-          "ngrok-skip-browser-warning": "true",
-        },
+          'ngrok-skip-browser-warning': 'true'
+        }
       },
     },
   },

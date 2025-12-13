@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import axios from "@/utils/axiosInterceptor";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:9092";
+const API_URL = import.meta.env.VITE_API_URL || "";
 
 interface TicketSelection {
   type: string;
@@ -256,11 +256,10 @@ const Payment = () => {
           <div className="space-y-3">
             <div
               onClick={() => setPaymentMethod("VNPAY")}
-              className={`border rounded-lg p-4 cursor-pointer transition-all ${
-                paymentMethod === "VNPAY"
-                  ? "border-[#2dc275] bg-[#2dc275]/10"
-                  : "border-gray-700 bg-gray-800/50"
-              }`}
+              className={`border rounded-lg p-4 cursor-pointer transition-all ${paymentMethod === "VNPAY"
+                ? "border-[#2dc275] bg-[#2dc275]/10"
+                : "border-gray-700 bg-gray-800/50"
+                }`}
             >
               <div className="flex items-center gap-3">
                 <div className="flex-1">
@@ -270,11 +269,10 @@ const Payment = () => {
                   </p>
                 </div>
                 <div
-                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                    paymentMethod === "VNPAY"
-                      ? "border-[#2dc275]"
-                      : "border-gray-600"
-                  }`}
+                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === "VNPAY"
+                    ? "border-[#2dc275]"
+                    : "border-gray-600"
+                    }`}
                 >
                   {paymentMethod === "VNPAY" && (
                     <div className="w-3 h-3 rounded-full bg-[#2dc275]"></div>
@@ -285,11 +283,10 @@ const Payment = () => {
 
             <div
               onClick={() => setPaymentMethod("CASH")}
-              className={`border rounded-lg p-4 cursor-pointer transition-all ${
-                paymentMethod === "CASH"
-                  ? "border-[#2dc275] bg-[#2dc275]/10"
-                  : "border-gray-700 bg-gray-800/50"
-              }`}
+              className={`border rounded-lg p-4 cursor-pointer transition-all ${paymentMethod === "CASH"
+                ? "border-[#2dc275] bg-[#2dc275]/10"
+                : "border-gray-700 bg-gray-800/50"
+                }`}
             >
               <div className="flex items-center gap-3">
                 <div className="flex-1">
@@ -299,11 +296,10 @@ const Payment = () => {
                   </p>
                 </div>
                 <div
-                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                    paymentMethod === "CASH"
-                      ? "border-[#2dc275]"
-                      : "border-gray-600"
-                  }`}
+                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === "CASH"
+                    ? "border-[#2dc275]"
+                    : "border-gray-600"
+                    }`}
                 >
                   {paymentMethod === "CASH" && (
                     <div className="w-3 h-3 rounded-full bg-[#2dc275]"></div>
@@ -318,11 +314,10 @@ const Payment = () => {
         <button
           onClick={handleCreateOrder}
           disabled={isProcessing}
-          className={`w-full py-4 rounded-lg font-bold text-lg transition-all ${
-            isProcessing
-              ? "bg-gray-600 text-gray-400 cursor-not-allowed"
-              : "bg-[#2dc275] text-white hover:bg-[#25a562]"
-          }`}
+          className={`w-full py-4 rounded-lg font-bold text-lg transition-all ${isProcessing
+            ? "bg-gray-600 text-gray-400 cursor-not-allowed"
+            : "bg-[#2dc275] text-white hover:bg-[#25a562]"
+            }`}
         >
           {isProcessing ? (
             <span className="flex items-center justify-center gap-2">
