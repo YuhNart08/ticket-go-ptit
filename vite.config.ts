@@ -12,15 +12,15 @@ export default defineConfig({
         target: "https://d34d64e4bca8.ngrok-free.app",
         changeOrigin: true,
         headers: {
-          "ngrok-skip-browser-warning": "true",
-        },
+          'ngrok-skip-browser-warning': 'true'
+        }
       },
       "/images": {
         target: " https://d34d64e4bca8.ngrok-free.app",
         changeOrigin: true,
         headers: {
-          "ngrok-skip-browser-warning": "true",
-        },
+          'ngrok-skip-browser-warning': 'true'
+        }
       },
     },
   },
