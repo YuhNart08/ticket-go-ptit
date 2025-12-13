@@ -7,6 +7,7 @@ interface Ticket {
   event_date: string;
   event_location?: string;
   event_duration?: string;
+  event_banner?: string;
   status: string;
   ticket_type: string; 
   quantity: number;
