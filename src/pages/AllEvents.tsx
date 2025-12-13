@@ -108,7 +108,7 @@ const AllEvents = () => {
       <div className="min-h-screen bg-[#000] pb-15">
         <div className="mx-5 lg:mx-auto max-w-[1250px]">
           {/* header */}
-          <div className="text-white container py-6">
+          <div className="text-white container py-6 flex items-center">
             <p className="text-[#2dc275] font-semibold">Kết quả tìm kiếm:</p>
           </div>
           {/* seach results section */}
@@ -120,13 +120,20 @@ const AllEvents = () => {
                   className="bg-[#3f3f46] rounded-xl aspect-[16/9] animate-pulse"
                 ></div>
               ))
-              : events.map((event, index) => (
-                <EventCard
-                  key={event.id ?? index}
-                  event={event}
-                  price={getDisplayPrice(event.ticketTypes)}
-                />
-              ))}
+              : events.length > 0
+                ? events.map((event, index) => (
+                    <EventCard
+                      key={event.id ?? index}
+                      event={event}
+                      price={getDisplayPrice(event.ticketTypes)}
+                    />
+                  ))
+                : (
+                  <div className="col-span-full text-center py-12">
+                    <p className="text-gray-400 text-lg">Không tìm thấy kết quả</p>
+                    <p className="text-gray-500 text-sm mt-2">Vui lòng thử lại với bộ lọc khác</p>
+                  </div>
+                )}
           </div>
         </div>
 

@@ -4,6 +4,7 @@ import axios from "@/utils/axiosInterceptor";
 import { CATEGORIES } from "../../../constants/config/constant.js";
 import TicketManagement from "../../../components/Layouts/admin/components/TicketManagement.jsx";
 import { formatCurrency } from "@/utils/utils";
+import { toast } from "sonner";
 
 export default function EventDetail() {
   const [newTicket, setNewTicket] = useState({
@@ -88,7 +89,7 @@ export default function EventDetail() {
         });
         setNewTicketErrors(backendErrors);
       } else {
-        alert(
+        toast.error(
           "Lỗi khi tạo loại vé: " + (err.response?.data?.message || err.message)
         );
       }
@@ -123,7 +124,7 @@ export default function EventDetail() {
       );
       setUpdateTicket({ type: "", price: "", quantity: "", description: "" });
       setUpdateTicketErrors({});
-      alert("Cập nhật loại vé thành công!");
+      toast.success("Cập nhật loại vé thành công!");
       return true;
     } catch (err) {
       if (err.response?.data?.errors) {
@@ -138,7 +139,7 @@ export default function EventDetail() {
         });
         setUpdateTicketErrors(backendErrors);
       } else {
-        alert(
+        toast.error(
           "Lỗi khi cập nhật loại vé: " +
             (err.response?.data?.message || err.message)
         );
@@ -154,7 +155,7 @@ export default function EventDetail() {
 
         setTicketTypes(ticketTypes.filter((t) => t.id !== ticketId));
       } catch (err) {
-        alert(
+        toast.error(
           "Failed to delete ticket: " +
             (err.response?.data?.message || err.message)
         );
@@ -330,7 +331,7 @@ export default function EventDetail() {
         },
       });
 
-      alert("Cập nhật thành công!");
+      toast.success("Cập nhật thành công!");
       navigate("/admin/events");
     } catch (err) {
       if (err.response?.data?.errors) {
@@ -354,7 +355,7 @@ export default function EventDetail() {
         });
         setErrors(backendErrors);
       } else {
-        alert(
+        toast.error(
           "Failed to update event: " +
             (err.response?.data?.message || err.message)
         );

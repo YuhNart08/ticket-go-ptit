@@ -4,6 +4,7 @@ import axios from "@/utils/axiosInterceptor";
 import { useAuth } from "../../../contexts/AuthContext.jsx";
 import DashboardCharts from "../../../components/Layouts/admin/DashboardCharts.jsx";
 import { formatCurrency } from "@/utils/utils";
+import { toast } from "sonner";
 
 export default function Dashboard() {
   const { user, token } = useAuth();
@@ -33,11 +34,11 @@ export default function Dashboard() {
         }
       } catch (error) {
         if (error.response?.status === 400 || error.response?.status === 500) {
-          alert(
+          toast.error(
             "Error fetching dashboard data: " + error.response.data.message
           );
         } else {
-          alert("An unexpected error occurred while fetching dashboard data.");
+          toast.error("An unexpected error occurred while fetching dashboard data.");
         }
       }
     };

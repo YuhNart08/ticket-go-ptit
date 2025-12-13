@@ -5,6 +5,7 @@ import { Camera, Check, X, Calendar } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import UserSidebar from "../components/Layouts/Client/UserSidebar";
 import axios from "@/utils/axiosInterceptor";
+import { toast } from "sonner";
 
 const AccountSettings = () => {
   const navigate = useNavigate();
@@ -138,7 +139,7 @@ const AccountSettings = () => {
 
       if (response.data.token) {
         login(response.data.token);
-        alert("Cập nhật thông tin thành công!");
+        toast.success("Cập nhật thông tin thành công!");
       }
     } catch (err) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -156,7 +157,7 @@ const AccountSettings = () => {
         });
         setErrors(backendErrors);
       } else {
-        alert("Lỗi: " + (error.response?.data?.message || error.message));
+        toast.error("Lỗi: " + (error.response?.data?.message || error.message));
       }
     } finally {
       setLoading(false);

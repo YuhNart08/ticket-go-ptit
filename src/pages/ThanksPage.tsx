@@ -200,7 +200,7 @@ const ThanksPage = () => {
               <div className="flex justify-between items-center">
                 <span className="text-gray-400 text-base">Số tiền:</span>
                 <span className="text-[#2dc275] font-bold text-2xl">
-                  {formatCurrency(orderData.totalPrice)} đ
+                  {formatCurrency(orderData.totalPrice)}
                 </span>
               </div>
 
