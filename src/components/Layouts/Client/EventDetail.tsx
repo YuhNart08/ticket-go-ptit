@@ -151,6 +151,7 @@ const EventDetail = () => {
     0
   );
   const isSoldOut = totalTickets === 0;
+  const isTimeExpired = new Date(event.startDate) <= new Date();
 
   return (
     <>
@@ -199,8 +200,8 @@ const EventDetail = () => {
               </div>
 
               <PrimaryColorButton
-                title="Mua vé ngay"
-                disabled={isSoldOut}
+                title={isSoldOut ? "Hết vé" : isTimeExpired ? "Sự kiện đã kết thúc" : "Mua vé ngay"}
+                disabled={isSoldOut || isTimeExpired}
                 fullSize={true}
                 onClick={() => handleSelectTicket(String(event.id))}
               />
@@ -260,8 +261,8 @@ const EventDetail = () => {
             <div className="mx-3 flex flex-col sm:flex-row items-start sm:items-center py-3 justify-between border-b border-black gap-3 sm:gap-0">
               <h1 className="text-white text-md font-bold">Thông tin vé</h1>
               <PrimaryColorButton
-                title="Mua vé ngay"
-                disabled={isSoldOut}
+                title={isSoldOut ? "Hết vé" : isTimeExpired ? "Sự kiện đã kết thúc" : "Mua vé ngay"}
+                disabled={isSoldOut || isTimeExpired}
                 onClick={() => handleSelectTicket(String(event.id))}
               />
             </div>
