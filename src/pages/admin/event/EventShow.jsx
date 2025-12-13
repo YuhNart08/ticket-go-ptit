@@ -40,7 +40,8 @@ export default function EventShow() {
     if (!window.confirm("Are you sure you want to delete this event?")) return;
 
     try {
-      await axios.delete(`/events/${id}`);
+      await axios.delete(`/api/events/${id}`);
+      toast.success("Event deleted successfully!");
 
       setEvents((prevEvents) => {
         const newEvents = prevEvents.filter((u) => u.id !== id);
