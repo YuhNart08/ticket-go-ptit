@@ -86,7 +86,9 @@ const EventDetail = () => {
 
   const handleConfirm = () => {
     setShowConfirmDialog(false);
-    navigate(`/events/${id}/bookings/select-ticket/booking-form`);
+    navigate(`/events/${id}/bookings/select-ticket/booking-form`, {
+      state: { countdownEndTime },
+    });
   }
 
   const handleDialogTimeout = () => {
