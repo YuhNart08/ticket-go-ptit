@@ -55,11 +55,11 @@ const Header = () => {
           {/* Logo */}
           <Link to="/" className="flex-shrink-0">
             <img
-              src="https://salt.tkbcdn.com/ts/ds/32/dc/a2/7871f1207e8c4c2747698b5aa6d15a56.png"
-              alt="tkbvnpay"
-              width="100"
+              src="/ticketgo_logo.png"
+              alt="TicketGo"
+              width="180"
               height="33"
-              className="w-[90px] sm:w-[110px] md:w-[127px] md:h-[41px]"
+              className="w-[140px] sm:w-[160px] md:w-[180px] md:h-[41px]"
             />
           </Link>
 

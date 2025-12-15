@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import logo from "../../../../public/ticketbox_tkb_logo.jpg";
+import logo from "../../../../public/ticketgo_logo2.png";
 import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faBars } from "@fortawesome/free-solid-svg-icons";
@@ -40,7 +40,6 @@ export default function HeaderAdmin({ setOpen }) {
     <header className="fixed top-0 left-0 right-0 z-50 bg-[#2dc275] text-white shadow-md">
       <div className="flex justify-between items-center">
         <Link to="/admin" className="flex items-center gap-3 py-3 px-4">
-          <img src={logo} alt="Logo" className="w-8 h-8 object-cover" />
           <span className="text-base sm:text-xl md:text-2xl font-bold">
             Ticket Go
           </span>
