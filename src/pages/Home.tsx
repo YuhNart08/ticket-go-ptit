@@ -16,7 +16,7 @@ const Home = () => {
     const apiUrl = import.meta.env.VITE_API_BASE_URL;
     console.log("API URL:", apiUrl);
     const fetchData = async () => {
-      const url = `${apiUrl}/api/events?page=1&limit=8&week=true&month=true`;
+      const url = `/api/events?page=1&limit=8&week=true&month=true`;
       try {
         const response = await fetch(url);
         if (!response.ok)
