@@ -33,6 +33,7 @@ import BookingForm from "@/pages/BookingForm";
 import PaymentForm from "@/pages/PaymentForm";
 import Payment from "@/pages/Payment";
 import ThanksPage from "@/pages/ThanksPage";
+import CancelledPage from "@/pages/CancelledPage";
 
 const publicRoutes = [
   { path: "/", component: Home, layout: DefaultLayout },
@@ -57,6 +58,7 @@ const publicRoutes = [
   },
   { path: "/payment", component: Payment, layout: DefaultLayout },
   { path: "/thanks", component: ThanksPage, layout: ThanksLayout },
+  { path: "/cancelled", component: CancelledPage, layout: ThanksLayout },
   { path: "/search", component: AllEvents, layout: DefaultLayout },
   { path: "*", component: NotFound, layout: null },
 ];

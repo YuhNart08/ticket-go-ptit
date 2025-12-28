@@ -372,9 +372,9 @@ export default function UserDetail() {
                     const avatarFilename = avatarPreview.split("/").pop();
                     const alternatives = [
                       `/public/images/user/${avatarFilename}`,
-                      `http://localhost:9092/images/user/${avatarFilename}`,
-                      `http://localhost:9092/public/images/user/${avatarFilename}`,
-                      `http://localhost:9092/uploads/user/${avatarFilename}`,
+                      `/images/user/${avatarFilename}`,
+                      `/images/user/${avatarFilename}`,
+                      `/images/user/${avatarFilename}`,
                     ];
 
                     console.log("Trying alternatives:", alternatives);
