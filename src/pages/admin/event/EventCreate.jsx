@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "@/utils/axiosInterceptor";
 import { CATEGORIES } from "../../../constants/config/constant";
 import { formatCurrency } from "@/utils/utils";
+import { toast } from "sonner";
 
 export default function EventCreate() {
   const navigate = useNavigate();
@@ -271,7 +272,7 @@ export default function EventCreate() {
         }
       }
 
-      alert("Event created successfully!");
+      toast.success("Event created successfully!");
       navigate("/admin/events");
     } catch (err) {
       if (err.response?.data?.errors) {
@@ -295,7 +296,7 @@ export default function EventCreate() {
         });
         setErrors(backendErrors);
       } else {
-        alert(
+        toast.error(
           "Failed to create event: " +
             (err.response?.data?.message || err.message)
         );

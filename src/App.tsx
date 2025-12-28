@@ -8,6 +8,8 @@ import { Toaster } from "sonner";
 import { AuthProvider } from "./contexts/AuthContext.jsx";
 // @ts-expect-error - JSX file without type declarations
 import LayoutAdmin from "./components/Layouts/admin/LayoutAdmin";
+// @ts-expect-error - JSX file without type declarations
+import ProtectedRoute from "./components/Layouts/admin/components/ProtectedRoute.jsx";
 
 function App() {
   return (
@@ -50,9 +52,11 @@ function App() {
               key={`private-${index}`}
               path={route.path}
               element={
-                <Layout>
-                  <Page />
-                </Layout>
+                <ProtectedRoute adminOnly={true}>
+                  <Layout>
+                    <Page />
+                  </Layout>
+                </ProtectedRoute>
               }
             />
           );

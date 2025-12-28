@@ -9,8 +9,8 @@ const Footer = () => {
           <div>
             <Link to="/" className="flex flex-col gap-4">
               <img
-                src="https://salt.tkbcdn.com/ts/ds/32/dc/a2/7871f1207e8c4c2747698b5aa6d15a56.png"
-                alt="tkbvnpay"
+                src="/ticketgo_logo.png"
+                alt="TicketGo"
                 width="127"
                 height="41"
               ></img>

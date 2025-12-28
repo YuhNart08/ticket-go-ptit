@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Pagination from "../../../components/Layouts/admin/components/Pagination.jsx";
 import axios from "@/utils/axiosInterceptor";
+import { toast } from "sonner";
 
 export default function EventShow() {
   const [events, setEvents] = useState([]);
@@ -40,6 +41,7 @@ export default function EventShow() {
 
     try {
       await axios.delete(`/api/events/${id}`);
+      toast.success("Event deleted successfully!");
 
       setEvents((prevEvents) => {
         const newEvents = prevEvents.filter((u) => u.id !== id);
@@ -47,7 +49,7 @@ export default function EventShow() {
         return newEvents;
       });
     } catch (err) {
-      alert("Delete failed: " + (err.response?.data?.message || err.message));
+      toast.error("Delete failed: " + (err.response?.data?.message || err.message));
     }
   };
 

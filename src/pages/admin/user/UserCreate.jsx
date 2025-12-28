@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "@/utils/axiosInterceptor";
 import { GENDERS } from "../../../constants/config/constant";
+import { toast } from "sonner";
 
 export default function UserCreate() {
   const [formData, setFormData] = useState({
@@ -83,7 +84,7 @@ export default function UserCreate() {
         },
       });
 
-      alert("Tạo người dùng thành công!");
+      toast.success("Tạo người dùng thành công!");
       navigate("/admin/users");
     } catch (err) {
       if (err.response?.data?.errors) {
@@ -103,7 +104,7 @@ export default function UserCreate() {
         });
         setErrors(backendErrors);
       } else {
-        alert("Lỗi: " + (err.response?.data?.message || err.message));
+        toast.error("Lỗi: " + (err.response?.data?.message || err.message));
       }
     }
   };

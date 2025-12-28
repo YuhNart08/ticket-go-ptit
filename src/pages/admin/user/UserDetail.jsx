@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import axios from "@/utils/axiosInterceptor";
 import { GENDERS } from "../../../constants/config/constant";
+import { toast } from "sonner";
 
 export default function UserDetail() {
   const { id } = useParams();
@@ -126,7 +127,7 @@ export default function UserDetail() {
         },
       });
 
-      alert("Cập nhật thành công!");
+      toast.success("Cập nhật thành công!");
       navigate("/admin/users");
     } catch (err) {
       if (err.response?.data?.errors) {
@@ -145,7 +146,7 @@ export default function UserDetail() {
         });
         setErrors(backendErrors);
       } else {
-        alert("Lỗi: " + err.response?.data?.message || err.message);
+        toast.error("Lỗi: " + err.response?.data?.message || err.message);
       }
     }
   };

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Pagination from "../../../components/Layouts/admin/components/Pagination.jsx";
 import axios from "@/utils/axiosInterceptor";
+import { toast } from "sonner";
 
 export default function UserShow() {
   const [users, setUsers] = useState([]);
@@ -47,7 +48,7 @@ export default function UserShow() {
         return newUsers;
       });
     } catch (err) {
-      alert("Delete failed: " + (err.response?.data?.message || err.message));
+      toast.error("Delete failed: " + (err.response?.data?.message || err.message));
     }
   };
 
