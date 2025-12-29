@@ -26,7 +26,7 @@ export default function HeaderAdmin({ setOpen }) {
 
   const handleLogout = async () => {
     try {
-      await axios.post("/auth/logout");
+      await axios.post("/api/auth/logout");
     } catch (error) {
       console.error("Lỗi khi đăng xuất:", error);
     } finally {
