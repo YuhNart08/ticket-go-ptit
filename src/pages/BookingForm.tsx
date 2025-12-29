@@ -132,15 +132,9 @@ const BookingForm = () => {
       try {
         setIsLoading(true);
 
-        const response = await fetch(`/api/events/${String(id)}`);
+        const response = await axios.get(`/api/events/${String(id)}`);
 
-        if (!response.ok) {
-          if (response.status === 404) {
-            throw new Error("Sự kiện không tồn tại. Mời bạn chọn sự kiện khác");
-          }
-          throw new Error(`Error when loaded data: ${response.statusText}`);
-        }
-        const result = await response.json();
+        const result = response.data;
         setEvent(result);
       } catch (err: any) {
         console.log(err);
@@ -159,16 +153,9 @@ const BookingForm = () => {
       try {
         setIsLoading(true);
 
-        const response = await fetch(`/api/carts`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await axios.get(`/api/carts`);
 
-        if (!response.ok) return;
-
-        const result = await response.json();
+        const result = response.data;
 
         if (result.cartDetails && Array.isArray(result.cartDetails)) {
           setCartDetails(result.cartDetails);

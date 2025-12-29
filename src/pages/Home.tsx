@@ -8,6 +8,7 @@ import type { Event } from "../constants/types/types";
 import { categories } from "@/constants/data/categories";
 import CategoryFilterBar from "@/components/Layouts/Client/CategoryFilterBar";
 import CarouselItem from "@/components/Layouts/Client/CarouselItem";
+import axios from "axios";
 
 const Home = () => {
   const [events, setEvents] = useState<Event[]>([]);
@@ -18,12 +19,9 @@ const Home = () => {
     const fetchData = async () => {
       const url = `/api/events?page=1&limit=8&week=true&month=true`;
       try {
-        const response = await fetch(url);
-        if (!response.ok)
-          throw new Error(`Response status: ${response.status}`);
+        const response = await axios.get(url);
 
-        const result = await response.json();
-
+        const result = response.data;
         console.log("result", result);
         setEvents(result.events || []);
       } catch (e) {
