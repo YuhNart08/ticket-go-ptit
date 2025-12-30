@@ -4,8 +4,6 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import axios from "@/utils/axiosInterceptor";
 
-const API_URL = import.meta.env.VITE_API_URL || "";
-
 interface TicketSelection {
   type: string;
   price: number;
@@ -64,13 +62,13 @@ const Payment = () => {
 
     try {
       for (const ticket of paymentData.selectedTickets) {
-        await axios.post(`${API_URL}/api/carts`, {
+        await axios.post(`/api/carts`, {
           ticketTypeId: ticket.ticketTypeId,
           quantity: ticket.quantity,
         });
       }
 
-      const orderResponse = await axios.post(`${API_URL}/api/carts/place-order`, {
+      const orderResponse = await axios.post(`/api/carts/place-order`, {
         receiverName: receiverName.trim(),
         receiverPhone: receiverPhone.trim(),
         receiverEmail: receiverEmail.trim() || null,

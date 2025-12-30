@@ -38,15 +38,8 @@ const EventDetail = () => {
         setIsLoading(true);
         setError(null);
 
-        const response = await fetch(`/api/events/${String(id)}`);
-
-        if (!response.ok) {
-          if (response.status === 404) {
-            throw new Error("Sự kiện không tồn tại. Mời bạn chọn sự kiện khác");
-          }
-          throw new Error(`Error when loaded data: ${response.statusText}`);
-        }
-        const result = await response.json();
+        const response = await axios.get(`/api/events/${String(id)}`);
+        const result = await response.data;
         setEvent(result);
       } catch (err: any) {
         setError(err.message);

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import EventCard from "./EventCard";
 import { getDisplayPrice } from "../../../utils/getDisplayPrice";
 import type { Event } from "../../../constants/types/types";
+import axios from "@/utils/axiosInterceptor";
 
 interface EventSectionProps {
   title: string;
@@ -15,15 +16,12 @@ const EventSection = ({ title, catId }: EventSectionProps) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const url = `/api/events?page=1&limit=4${
-        catId ? `&category=${encodeURIComponent(title)}` : ""
-      }`;
+      const url = `/api/events?page=1&limit=4${catId ? `&category=${encodeURIComponent(title)}` : ""
+        }`;
       try {
         setLoading(true);
-        const response = await fetch(url);
-        if (!response.ok)
-          throw new Error(`Response status: ${response.status}`);
-        const result = await response.json();
+        const response = await axios.get(url);
+        const result = response.data;
         setEvents(result.events || []);
       } catch (e) {
         console.error(`Lỗi khi fetch sự kiện cho "${title}":`, e);
@@ -66,18 +64,18 @@ const EventSection = ({ title, catId }: EventSectionProps) => {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
         {loading
           ? Array.from({ length: 4 }).map((_, index) => (
-              <div
-                key={index}
-                className="bg-[#3f3f46] rounded-xl aspect-[16/9] animate-pulse"
-              ></div>
-            ))
+            <div
+              key={index}
+              className="bg-[#3f3f46] rounded-xl aspect-[16/9] animate-pulse"
+            ></div>
+          ))
           : events.map((event) => (
-              <EventCard
-                key={event.id}
-                event={event}
-                price={getDisplayPrice(event.ticketTypes)}
-              />
-            ))}
+            <EventCard
+              key={event.id}
+              event={event}
+              price={getDisplayPrice(event.ticketTypes)}
+            />
+          ))}
       </div>
     </div>
   );

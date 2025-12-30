@@ -14,6 +14,7 @@ import {
 import CategoryFilterBar from "@/components/Layouts/Client/CategoryFilterBar";
 import DateFilterBar from "@/components/Layouts/Client/DateFilterBar";
 import { categories } from "@/constants/data/categories";
+import axios from "@/utils/axiosInterceptor";
 
 const AllEvents = () => {
   const [events, setEvents] = useState<Event[]>([]);
@@ -63,11 +64,9 @@ const AllEvents = () => {
       const url = `/api/events?${params.toString()}`;
 
       try {
-        const response = await fetch(url);
-        if (!response.ok)
-          throw new Error(`Response status: ${response.status}`);
+        const response = await axios.get(url);
 
-        const result = await response.json();
+        const result = response.data;
         setEvents(result.events || []);
         setTotalPages(result.totalPages || 1);
       } catch (e) {
@@ -122,12 +121,12 @@ const AllEvents = () => {
               ))
               : events.length > 0
                 ? events.map((event, index) => (
-                    <EventCard
-                      key={event.id ?? index}
-                      event={event}
-                      price={getDisplayPrice(event.ticketTypes)}
-                    />
-                  ))
+                  <EventCard
+                    key={event.id ?? index}
+                    event={event}
+                    price={getDisplayPrice(event.ticketTypes)}
+                  />
+                ))
                 : (
                   <div className="col-span-full text-center py-12">
                     <p className="text-gray-400 text-lg">Không tìm thấy kết quả</p>
