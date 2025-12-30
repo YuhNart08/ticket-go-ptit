@@ -118,8 +118,6 @@ const PaymentForm = () => {
 
         const response = await axios.get(`/api/carts/checkout`);
 
-        if (!response.ok) return;
-
         const result = response.data;
         // Store cart details and ID for checkout payload
         if (result.cartDetails && Array.isArray(result.cartDetails)) {

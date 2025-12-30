@@ -14,7 +14,7 @@ import {
 import CategoryFilterBar from "@/components/Layouts/Client/CategoryFilterBar";
 import DateFilterBar from "@/components/Layouts/Client/DateFilterBar";
 import { categories } from "@/constants/data/categories";
-import axios from "axios";
+import axios from "@/utils/axiosInterceptor";
 
 const AllEvents = () => {
   const [events, setEvents] = useState<Event[]>([]);

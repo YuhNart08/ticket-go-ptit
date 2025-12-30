@@ -8,7 +8,7 @@ import type { Event } from "../constants/types/types";
 import { categories } from "@/constants/data/categories";
 import CategoryFilterBar from "@/components/Layouts/Client/CategoryFilterBar";
 import CarouselItem from "@/components/Layouts/Client/CarouselItem";
-import axios from "axios";
+import axios from "@/utils/axiosInterceptor";
 
 const Home = () => {
   const [events, setEvents] = useState<Event[]>([]);

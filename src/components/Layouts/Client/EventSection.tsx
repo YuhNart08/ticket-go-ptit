@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import EventCard from "./EventCard";
 import { getDisplayPrice } from "../../../utils/getDisplayPrice";
 import type { Event } from "../../../constants/types/types";
-import axios from "axios";
+import axios from "@/utils/axiosInterceptor";
 
 interface EventSectionProps {
   title: string;
