@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Eye, EyeOff, AlertCircle, CheckCircle2 } from 'lucide-react';
 import type { RegisterCredentials } from '../../constants/types/types';
-import axios from 'axios';
+import axios from "@/utils/axiosInterceptor";
 
 interface RegisterModalProps {
   isOpen: boolean;
@@ -45,7 +45,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
-  
+
     if (!formData.fullName || formData.fullName.trim() === '') {
       setErrors({ fullName: 'Họ và tên không được để trống' });
       return;
@@ -60,14 +60,14 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
       setErrors({ password: 'Mật khẩu phải có ít nhất 6 ký tự' });
       return;
     }
-  
+
     if (formData.password !== formData.confirmPassword) {
       setErrors({ confirmPassword: 'Mật khẩu xác nhận không khớp' });
       return;
     }
-  
+
     setIsSubmitting(true);
-  
+
     try {
       const response = await axios.post('/api/auth/register', {
         fullName: formData.fullName,
@@ -116,7 +116,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    
+
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
@@ -124,16 +124,16 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
 
   if (!isOpen) return null;
 
-return (
-  <div 
-    ref={modalRef}
-    className="bg-white rounded-2xl w-full shadow-2xl transform transition-all max-h-[90vh] overflow-y-auto"
-  >
-      <div 
+  return (
+    <div
+      ref={modalRef}
+      className="bg-white rounded-2xl w-full shadow-2xl transform transition-all max-h-[90vh] overflow-y-auto"
+    >
+      <div
         ref={modalRef}
         className="bg-white rounded-2xl w-full max-w-md shadow-2xl transform transition-all max-h-[90vh] overflow-y-auto"
       >
-  {/* Tiêu đề */}
+        {/* Tiêu đề */}
         <div className="bg-gradient-to-r from-green-600 to-green-700 rounded-t-2xl px-6 py-5 flex items-center justify-between sticky top-0 z-10">
           <h2 id="register-modal-title" className="text-white text-2xl font-bold">Đăng ký</h2>
           <button
@@ -146,7 +146,7 @@ return (
           </button>
         </div>
 
-  {/* Biểu mẫu */}
+        {/* Biểu mẫu */}
         <form onSubmit={handleSubmit} className="p-6 space-y-5" noValidate>
           {/* Thông báo thành công */}
           {showSuccess && (
@@ -169,11 +169,10 @@ return (
               value={formData.fullName}
               onChange={handleInputChange}
               placeholder="Nguyễn Văn A"
-              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${
-                errors.fullName
-                  ? 'border-red-500 focus:ring-red-500'
-                  : 'border-gray-300 focus:ring-green-500 focus:border-transparent'
-              }`}
+              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${errors.fullName
+                ? 'border-red-500 focus:ring-red-500'
+                : 'border-gray-300 focus:ring-green-500 focus:border-transparent'
+                }`}
               disabled={isSubmitting}
               aria-invalid={!!errors.fullName}
               aria-describedby={errors.fullName ? 'fullName-error' : undefined}
@@ -198,11 +197,10 @@ return (
               value={formData.email}
               onChange={handleInputChange}
               placeholder="example@email.com"
-              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${
-                errors.email
-                  ? 'border-red-500 focus:ring-red-500'
-                  : 'border-gray-300 focus:ring-green-500 focus:border-transparent'
-              }`}
+              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${errors.email
+                ? 'border-red-500 focus:ring-red-500'
+                : 'border-gray-300 focus:ring-green-500 focus:border-transparent'
+                }`}
               disabled={isSubmitting}
               aria-invalid={!!errors.email}
               aria-describedby={errors.email ? 'email-error' : undefined}
@@ -227,11 +225,10 @@ return (
               value={formData.phone}
               onChange={handleInputChange}
               placeholder="0912345678"
-              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${
-                errors.phone
-                  ? 'border-red-500 focus:ring-red-500'
-                  : 'border-gray-300 focus:ring-green-500 focus:border-transparent'
-              }`}
+              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${errors.phone
+                ? 'border-red-500 focus:ring-red-500'
+                : 'border-gray-300 focus:ring-green-500 focus:border-transparent'
+                }`}
               disabled={isSubmitting}
               aria-invalid={!!errors.phone}
               aria-describedby={errors.phone ? 'phone-error' : undefined}
@@ -257,11 +254,10 @@ return (
                 value={formData.password}
                 onChange={handleInputChange}
                 placeholder="Nhập mật khẩu của bạn"
-                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors pr-12 ${
-                  errors.password
-                    ? 'border-red-500 focus:ring-red-500'
-                    : 'border-gray-300 focus:ring-green-500 focus:border-transparent'
-                }`}
+                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors pr-12 ${errors.password
+                  ? 'border-red-500 focus:ring-red-500'
+                  : 'border-gray-300 focus:ring-green-500 focus:border-transparent'
+                  }`}
                 disabled={isSubmitting}
                 aria-invalid={!!errors.password}
                 aria-describedby={errors.password ? 'password-error' : undefined}
@@ -297,11 +293,10 @@ return (
                 value={formData.confirmPassword}
                 onChange={handleInputChange}
                 placeholder="Nhập lại mật khẩu"
-                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors pr-12 ${
-                  errors.confirmPassword
-                    ? 'border-red-500 focus:ring-red-500'
-                    : 'border-gray-300 focus:ring-green-500 focus:border-transparent'
-                }`}
+                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors pr-12 ${errors.confirmPassword
+                  ? 'border-red-500 focus:ring-red-500'
+                  : 'border-gray-300 focus:ring-green-500 focus:border-transparent'
+                  }`}
                 disabled={isSubmitting}
                 aria-invalid={!!errors.confirmPassword}
                 aria-describedby={errors.confirmPassword ? 'confirmPassword-error' : undefined}
